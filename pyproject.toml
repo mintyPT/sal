@@ -6,7 +6,7 @@ authors = ["mauro santos <mauro@scandit.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 notebook = "^6.5.1"
 nbdev = "^2.3.7"
 fastcore = "^1.5.27"
