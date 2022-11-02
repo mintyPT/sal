@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "Sal"
+  site-url: "https://mintyPT.github.io/sal"
+  description: "Salty code generator"
+  repo-branch: main
+  repo-url: "https://github.com/mintyPT/sal"

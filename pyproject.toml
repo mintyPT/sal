@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "sal"
+version = "0.1.0"
+description = ""
+authors = ["mauro santos <mauro@scandit.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+notebook = "^6.5.1"
+nbdev = "^2.3.7"
+fastcore = "^1.5.27"
+python-frontmatter = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
