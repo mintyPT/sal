@@ -10,7 +10,7 @@ from textwrap import indent
 from copy import deepcopy
 from typing import Callable
 
-# %% ../nbs/00_core.ipynb 5
+# %% ../nbs/00_core.ipynb 7
 class WithChildrenMixin:
     """Adds `parent`/`children`"""
     def __init__(self):
@@ -31,7 +31,7 @@ class WithChildrenMixin:
     def set_parent(self, parent: "Data"):
         self.parent = parent
 
-# %% ../nbs/00_core.ipynb 7
+# %% ../nbs/00_core.ipynb 9
 class Data(WithChildrenMixin):
     """Data holder used during code generation. Logic is kept as separate functions"""
     def __init__(self, 
@@ -85,21 +85,21 @@ class Data(WithChildrenMixin):
     
     __repr__ = __str__
 
-# %% ../nbs/00_core.ipynb 34
+# %% ../nbs/00_core.ipynb 37
 def iter_data(obj, level=0):
     """Simply yields parent and then children"""
     yield obj, level
     for child in obj.children:
         yield from iter_data(child, level=level+1)
 
-# %% ../nbs/00_core.ipynb 39
+# %% ../nbs/00_core.ipynb 42
 class MappedData(WithChildrenMixin):
     """Data structure used to return results from the `map_data` function"""
     def __init__(self, value):
         self.value = value
         super().__init__()
 
-# %% ../nbs/00_core.ipynb 40
+# %% ../nbs/00_core.ipynb 43
 def map_data(obj: Data, process: Callable, level=0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
     child_results = [map_data(c, process, level=level+1) for c in obj.children]

@@ -4,6 +4,7 @@
 
 .cell > .sourceCode {
   margin-bottom: 0;
+
 }
 
 .cell-output > pre {
@@ -28,6 +29,7 @@
   margin-top: 0;
 }
 
+
 div.description {
   padding-left: 2px;
   padding-top: 5px;
@@ -35,3 +37,26 @@ div.description {
   font-size: 135%;
   opacity: 70%;
 }
+
+
+
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    border-bottom: none;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    line-height: 0.8;
+}
+
+h1, h2 {
+    background: #f0f0f0;
+    padding: 30px;
+}
+
+h1 { font-size: 80px; }
+h2 { font-size: 50px; }
+h3 { font-size: 35px; }
+h4 { font-size: 27px; }
+h5 { font-size: 18px; }
+h6 { font-size: 12px; }
