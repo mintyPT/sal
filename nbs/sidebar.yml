@@ -6,6 +6,3 @@ website:
       - 01_loaders.ipynb
       - 02_code_generation.ipynb
       - 03_cli.ipynb
-      - nbdev.yml
-      - sidebar.yml
-      - styles.css
