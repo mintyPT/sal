@@ -731,7 +731,7 @@ webpdf = ["pyppeteer (>=1,<1.1)"]
 
 [[package]]
 name = "nbdev"
-version = "2.3.7"
+version = "2.3.9"
 description = "Create delightful software with Jupyter Notebooks"
 category = "main"
 optional = false
@@ -1683,8 +1683,8 @@ nbconvert = [
     {file = "nbconvert-7.2.3.tar.gz", hash = "sha256:7ae7ccc68495b565dab153459ee7e65039970913eb115070da6e2c673cf0e9f8"},
 ]
 nbdev = [
-    {file = "nbdev-2.3.7-py3-none-any.whl", hash = "sha256:f2bfa064876c31883394dc23e6d31896c856791f90f07ec16e23f30cf7ca2805"},
-    {file = "nbdev-2.3.7.tar.gz", hash = "sha256:04f91a31aa1f0cd1b5a325fb3c660be0ea0087f5cfd57d59f039351cb17d1871"},
+    {file = "nbdev-2.3.9-py3-none-any.whl", hash = "sha256:e4201c50d54b7aeb8a68d533634713874498740eff32b6659f9c6298e03a51c8"},
+    {file = "nbdev-2.3.9.tar.gz", hash = "sha256:c3fdf1d85d43f5a38cf2fb853ea2c57fce3ebe187be339089df7593df8d7447a"},
 ]
 nbformat = [
     {file = "nbformat-5.7.0-py3-none-any.whl", hash = "sha256:1b05ec2c552c2f1adc745f4eddce1eac8ca9ffd59bb9fd859e827eaa031319f9"},
