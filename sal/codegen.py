@@ -4,7 +4,7 @@
 __all__ = ['JinjaTemplateRenderer', 'TemplateLoader', 'MissingTemplate', 'InMemoryTemplateLoader', 'Renderer', 'SalBasic',
            'FrontMatterMixin', 'FrontMatterInMemoryTemplateLoader', 'Sal']
 
-# %% ../nbs/02_code_generation.ipynb 3
+# %% ../nbs/02_code_generation.ipynb 2
 from .loaders import xml_to_data
 from pathlib import Path
 from .core import Data, iter_data, render, FrontMatter
@@ -15,14 +15,14 @@ from jinja2 import StrictUndefined
 from textwrap import dedent
 from yaml.parser import ParserError
 
-# %% ../nbs/02_code_generation.ipynb 12
+# %% ../nbs/02_code_generation.ipynb 11
 class JinjaTemplateRenderer:
     def render(self, template = None, **kwargs) -> str:
         if not template:
             raise RuntimeError("Missing template")
         return render(template, **kwargs)
 
-# %% ../nbs/02_code_generation.ipynb 14
+# %% ../nbs/02_code_generation.ipynb 13
 class TemplateLoader(abc.ABC):
     @abc.abstractmethod
     def get_template(self, name: str) -> str:
@@ -34,7 +34,7 @@ class MissingTemplate(Exception):
         super().__init__(f"The template {name} is missing")
         self.name = name
 
-# %% ../nbs/02_code_generation.ipynb 15
+# %% ../nbs/02_code_generation.ipynb 14
 class InMemoryTemplateLoader(TemplateLoader):
     """
         Will keep a list of templates names + templates content
@@ -64,7 +64,7 @@ class InMemoryTemplateLoader(TemplateLoader):
             templates=templates_raw
         )
 
-# %% ../nbs/02_code_generation.ipynb 18
+# %% ../nbs/02_code_generation.ipynb 17
 class Renderer:
     
     # if no template is passed in, we use the DEFAULT_TEMPLATE
@@ -94,7 +94,7 @@ class Renderer:
     def process(self, data: Data) -> str:
         return self.render(data)
 
-# %% ../nbs/02_code_generation.ipynb 22
+# %% ../nbs/02_code_generation.ipynb 21
 class SalBasic:
     def __init__(self, renderer: Optional[Renderer] = None):
         self.renderer = renderer or Renderer()
@@ -126,7 +126,7 @@ class SalBasic:
         data = self.pre_process_data(data)
         return self.process_data(data)
 
-# %% ../nbs/02_code_generation.ipynb 41
+# %% ../nbs/02_code_generation.ipynb 40
 class FrontMatterMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -144,7 +144,7 @@ class FrontMatterMixin:
 class FrontMatterInMemoryTemplateLoader(FrontMatterMixin, InMemoryTemplateLoader):
     pass
 
-# %% ../nbs/02_code_generation.ipynb 43
+# %% ../nbs/02_code_generation.ipynb 42
 class Sal(SalBasic):
     def get_frontmatter_attributes_for_data(self, template: str, data: Data) -> dict:
         rendered = self.renderer.render(data, template)
