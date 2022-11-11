@@ -3,25 +3,23 @@
 # %% auto 0
 __all__ = ['render']
 
-# %% ../nbs/03_cli.ipynb 4
-def render(file, templates):
-    path = Path(templates)
-    glob = path.glob('*.jinja2')
+# %% ../nbs/03_cli.ipynb 2
+from pathlib import Path
+from .core import Data
+from .loaders import xml_file_to_data
+from .codegen import Sal, FrontMatterInMemoryTemplateLoader, Renderer, JinjaTemplateRenderer, MissingTemplate
 
-    templates_raw = {}
-    for p in glob:
-        model_name = p.name.replace('.jinja2', '')
-        with open(p, 'r') as h:
-            tpl = h.read()
-        templates_raw[model_name] = tpl
-        
-    
-    template_renderer2 = TemplateLoader(templates=templates_raw)
-    
-    with open(file, 'r') as h:
-        xml = h.read()
-        
-    struct: Data = xml_to_data(xml)  
-    sal = Sal(template_renderer2)
-    return sal.process(struct.clone())      
+# %% ../nbs/03_cli.ipynb 5
+def render(file, templates):
+    try:
+        repository = FrontMatterInMemoryTemplateLoader.from_directory(templates)
+        renderer = Renderer(repository=repository, renderer=JinjaTemplateRenderer())
+        sal = Sal(renderer)
+
+        struct: Data = xml_file_to_data(file)  
+        return sal.process(struct)
+    except MissingTemplate as e:
+        path = Path(templates) / f"{e.name}.jinja2"
+        path.write_text(Renderer.DEFAULT_TEMPLATE)
+        return render(file, templates)
 
