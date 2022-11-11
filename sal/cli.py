@@ -22,4 +22,3 @@ def render(file, templates):
         path = Path(templates) / f"{e.name}.jinja2"
         path.write_text(Renderer.DEFAULT_TEMPLATE)
         return render(file, templates)
-
