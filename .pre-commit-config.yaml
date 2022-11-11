@@ -1,0 +1,10 @@
+# pre-commit install
+# https://nbdev.fast.ai/tutorials/pre_commit.html
+# https://pre-commit.com/hooks.html
+repos:
+- repo: https://github.com/fastai/nbdev
+  rev: 2.2.10
+  hooks:
+  - id: nbdev_clean
+  - id: nbdev_export
+
