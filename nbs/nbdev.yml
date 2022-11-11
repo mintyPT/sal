@@ -4,6 +4,6 @@ project:
 website:
   title: "sal"
   site-url: "https://mintyPT.github.io/sal"
-  description: "Salty code generator"
+  description: "A salty code generator to season your code with generated code"
   repo-branch: main
   repo-url: "https://github.com/mintyPT/sal"
