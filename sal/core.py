@@ -89,21 +89,21 @@ class Data(WithChildrenMixin):
     
     __repr__ = __str__
 
-# %% ../nbs/00_core.ipynb 37
+# %% ../nbs/00_core.ipynb 31
 def iter_data(obj, level=0):
     """Simply yields parent and then children"""
     yield obj, level
     for child in obj.children:
         yield from iter_data(child, level=level+1)
 
-# %% ../nbs/00_core.ipynb 42
+# %% ../nbs/00_core.ipynb 36
 class MappedData(WithChildrenMixin):
     """Data structure used to return results from the `map_data` function"""
     def __init__(self, value):
         self.value = value
         super().__init__()
 
-# %% ../nbs/00_core.ipynb 43
+# %% ../nbs/00_core.ipynb 37
 def map_data(obj: Data, process: Callable, level=0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
     child_results = [map_data(c, process, level=level+1) for c in obj.children]
@@ -113,14 +113,14 @@ def map_data(obj: Data, process: Callable, level=0) -> MappedData:
         data.add_child(c)
     return data
 
-# %% ../nbs/00_core.ipynb 50
+# %% ../nbs/00_core.ipynb 44
 def _get_env():
     return Environment(
         loader=BaseLoader(), 
         undefined=StrictUndefined
     )
 
-# %% ../nbs/00_core.ipynb 52
+# %% ../nbs/00_core.ipynb 46
 def render(
     template: str, # template in string form
     filters: Optional[dict]=None, # jinja filters
@@ -137,7 +137,7 @@ def render(
         
     return result
 
-# %% ../nbs/00_core.ipynb 57
+# %% ../nbs/00_core.ipynb 51
 class FrontMatter:
     def __init__(self, handler=None):
         if handler is None:
@@ -193,10 +193,10 @@ class FrontMatter:
             return frontmatter.strip()
 
 
-# %% ../nbs/00_core.ipynb 59
+# %% ../nbs/00_core.ipynb 53
 import json
 
-# %% ../nbs/00_core.ipynb 60
+# %% ../nbs/00_core.ipynb 54
 def parse_arg(arg):
     try:
         v = json.loads(arg)
@@ -204,7 +204,7 @@ def parse_arg(arg):
         v = arg
     return v
 
-# %% ../nbs/00_core.ipynb 63
+# %% ../nbs/00_core.ipynb 57
 def parse_attrs(attrs):
     for k, y in attrs.items():
         attrs[k] = parse_arg(y)
