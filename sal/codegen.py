@@ -14,11 +14,12 @@ import abc
 from jinja2 import StrictUndefined
 from textwrap import dedent
 from yaml.parser import ParserError
+from black import format_str, FileMode
 
 # %% ../nbs/02_code_generation.ipynb 11
 class JinjaTemplateRenderer:
     def render(self, template = None, **kwargs) -> str:
-        if not template:
+        if template is None:
             raise RuntimeError("Missing template")
         return render(template, **kwargs)
 
@@ -74,10 +75,12 @@ class Renderer:
         self,
         *,
         renderer: JinjaTemplateRenderer = None,
-        repository: TemplateLoader = None
+        repository: TemplateLoader = None,
+        filters=None
     ):
         self.renderer = renderer
         self.repository = repository
+        self.filters = filters or {}
 
     def render(self, data: Data, template: Optional[str] = None) -> str:
         if template is None:
@@ -86,7 +89,7 @@ class Renderer:
         return self.renderer.render(
             template=template,
             **data.attrs,
-            filters={"render": self.render},
+            filters={**self.filters, "render": self.render},
             node=data,
             children=data.children,
         )
@@ -114,9 +117,18 @@ class SalBasic:
             h.write(rendered)
         return rendered
 
+    def action_black(self, data: Data):
+        rendered = self.renderer.render(
+            data, template=Renderer.DEFAULT_TEMPLATE
+        )
+        print(repr(rendered))
+        return format_str(rendered, mode=FileMode())
+    
     def process_data(self, data: Data):
         if data.name == "to-file":
             return self.action_to_file(data)
+        if data.name == "black":
+            return self.action_black(data)
         elif data.name == "wrapper":
             return [self.process(d) for d in data.children]
         else:
@@ -126,7 +138,7 @@ class SalBasic:
         data = self.pre_process_data(data)
         return self.process_data(data)
 
-# %% ../nbs/02_code_generation.ipynb 40
+# %% ../nbs/02_code_generation.ipynb 41
 class FrontMatterMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -144,7 +156,7 @@ class FrontMatterMixin:
 class FrontMatterInMemoryTemplateLoader(FrontMatterMixin, InMemoryTemplateLoader):
     pass
 
-# %% ../nbs/02_code_generation.ipynb 42
+# %% ../nbs/02_code_generation.ipynb 43
 class Sal(SalBasic):
     def get_frontmatter_attributes_for_data(self, template: str, data: Data) -> dict:
         rendered = self.renderer.render(data, template)
@@ -154,7 +166,7 @@ class Sal(SalBasic):
     def pre_process_data(self, data: Data):
         for d, _ in iter_data(data):
             
-            if d.name in ['to-file']:
+            if d.name in ['to-file', 'black']:
                 continue
             
             # load template
