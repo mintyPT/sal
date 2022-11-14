@@ -4,7 +4,7 @@
 __all__ = ['WithChildrenMixin', 'Data', 'iter_data', 'MappedData', 'map_data', 'render', 'FrontMatter', 'parse_arg',
            'parse_attrs']
 
-# %% ../nbs/00_core.ipynb 2
+# %% ../nbs/00_core.ipynb 3
 from typing import Any
 from copy import deepcopy
 from textwrap import indent
@@ -14,130 +14,130 @@ from jinja2 import Environment, BaseLoader, Template, StrictUndefined
 from frontmatter.default_handlers import YAMLHandler
 from frontmatter.util import u
 
-# %% ../nbs/00_core.ipynb 7
+# %% ../nbs/00_core.ipynb 8
 class WithChildrenMixin:
     """Adds `parent`/`children`"""
+
     def __init__(self):
         self.parent = None
         self.children = []
 
     def __len__(self):
         return len(self.children)
-    
+
     def __contains__(self, element):
         return element in self.children
-            
+
     def add_child(self, child: "Data"):
         self.children.append(child)
         child.set_parent(self)
         return child
-    
+
     def set_parent(self, parent: "Data"):
         self.parent = parent
 
-# %% ../nbs/00_core.ipynb 9
+# %% ../nbs/00_core.ipynb 10
 class Data(WithChildrenMixin):
     """Data holder used during code generation. Logic is kept as separate functions"""
-    def __init__(self, 
-                 name:str, # name of this element
-                 attrs: dict[str, Any] = None): # attributes
-        
+
+    def __init__(
+        self, name: str, attrs: dict[str, Any] = None  # name of this element
+    ):  # attributes
+
         self.name = name
-        
+
         if attrs is None:
             attrs = {}
         self._attrs = attrs
-        
+
         super().__init__()
-    
+
     @property
     def attrs(self):
         if self.parent:
             return ChainMap(self._attrs, self.parent.attrs)
         return ChainMap(self._attrs)
-            
+
     def clone(self):
         return deepcopy(self)
-        
+
     def __eq__(self, a):
         same_name = self.name == a.name
         same_attrs = self.attrs == a.attrs
         same_children = self.children == a.children
         return same_name and same_attrs and same_children
-    
+
     def __str__(self):
-        
+
         is_self_closing = not self.children
-        
+
         if self.children:
             children = map(str, self.children)
             children = "\n".join(children)
             children = children.strip()
             children = f"\n{children}\n"
             children = indent(children, "    ")
-            
+
         if self.attrs:
             if is_self_closing:
                 return f"<{self.name} {dict(self.attrs)} />"
             else:
                 return f"<{self.name} {dict(self.attrs)}>{children}</{self.name}>"
-            
+
         if is_self_closing:
             return f"<{self.name} />"
         else:
             return f"<{self.name}>{children}</{self.name}>"
-    
+
     __repr__ = __str__
 
-# %% ../nbs/00_core.ipynb 31
+# %% ../nbs/00_core.ipynb 32
 def iter_data(obj, level=0):
     """Simply yields parent and then children"""
     yield obj, level
     for child in obj.children:
-        yield from iter_data(child, level=level+1)
+        yield from iter_data(child, level=level + 1)
 
-# %% ../nbs/00_core.ipynb 36
+# %% ../nbs/00_core.ipynb 37
 class MappedData(WithChildrenMixin):
     """Data structure used to return results from the `map_data` function"""
+
     def __init__(self, value):
         self.value = value
         super().__init__()
 
-# %% ../nbs/00_core.ipynb 37
+# %% ../nbs/00_core.ipynb 38
 def map_data(obj: Data, process: Callable, level=0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
-    child_results = [map_data(c, process, level=level+1) for c in obj.children]
+    child_results = [map_data(c, process, level=level + 1) for c in obj.children]
     value = process(obj, level)
     data = MappedData(value)
     for c in child_results:
         data.add_child(c)
     return data
 
-# %% ../nbs/00_core.ipynb 44
+# %% ../nbs/00_core.ipynb 45
 def _get_env():
-    return Environment(
-        loader=BaseLoader(), 
-        undefined=StrictUndefined
-    )
+    return Environment(loader=BaseLoader(), undefined=StrictUndefined)
 
-# %% ../nbs/00_core.ipynb 46
+# %% ../nbs/00_core.ipynb 47
 def render(
-    template: str, # template in string form
-    filters: Optional[dict]=None, # jinja filters
+    template: str,  # template in string form
+    filters: Optional[dict] = None,  # jinja filters
     **kwargs: Any,
 ) -> str:
     if not filters:
         filters = {}
-    
+
     env = _get_env()
     env.filters.update(filters)
-    
+
     jinja: Template = env.from_string(template)
     result: str = jinja.render(**kwargs)
-        
+
     return result
 
-# %% ../nbs/00_core.ipynb 51
+# %% ../nbs/00_core.ipynb 52
 class FrontMatter:
     def __init__(self, handler=None):
         if handler is None:
@@ -161,7 +161,8 @@ class FrontMatter:
         try:
             raw_frontmatter = self.handler.load(raw_frontmatter)
         except ParserError as e:
-            msg = dedent(f"""
+            msg = dedent(
+                f"""
             ===
             There is an error with the following yaml (front matter)
             
@@ -171,7 +172,8 @@ class FrontMatter:
 
             ===
 
-            """)
+            """
+            )
 
             print(msg)
             raise e
@@ -181,22 +183,20 @@ class FrontMatter:
 
         return metadata
 
-    
     def get_content(self, template):
         frontmatter, content = self.split(template)
         return content.strip()
-    
+
     def get_raw_frontmatter(self, template):
         resp = self.split(template)
         frontmatter, content = resp
         if frontmatter:
             return frontmatter.strip()
 
-
-# %% ../nbs/00_core.ipynb 53
+# %% ../nbs/00_core.ipynb 54
 import json
 
-# %% ../nbs/00_core.ipynb 54
+# %% ../nbs/00_core.ipynb 55
 def parse_arg(arg):
     try:
         v = json.loads(arg)
@@ -204,7 +204,7 @@ def parse_arg(arg):
         v = arg
     return v
 
-# %% ../nbs/00_core.ipynb 57
+# %% ../nbs/00_core.ipynb 58
 def parse_attrs(attrs):
     for k, y in attrs.items():
         attrs[k] = parse_arg(y)

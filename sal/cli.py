@@ -3,20 +3,26 @@
 # %% auto 0
 __all__ = ['render']
 
-# %% ../nbs/03_cli.ipynb 2
+# %% ../nbs/03_cli.ipynb 3
 from pathlib import Path
 from .core import Data
 from .loaders import xml_file_to_data
-from .codegen import Sal, FrontMatterInMemoryTemplateLoader, Renderer, JinjaTemplateRenderer, MissingTemplate
+from sal.codegen import (
+    Sal,
+    FrontMatterInMemoryTemplateLoader,
+    Renderer,
+    JinjaTemplateRenderer,
+    MissingTemplate,
+)
 
-# %% ../nbs/03_cli.ipynb 5
+# %% ../nbs/03_cli.ipynb 7
 def render(file, templates):
     try:
         repository = FrontMatterInMemoryTemplateLoader.from_directory(templates)
         renderer = Renderer(repository=repository, renderer=JinjaTemplateRenderer())
         sal = Sal(renderer)
 
-        struct: Data = xml_file_to_data(file)  
+        struct: Data = xml_file_to_data(file)
         return sal.process(struct)
     except MissingTemplate as e:
         path = Path(templates) / f"{e.name}.jinja2"
