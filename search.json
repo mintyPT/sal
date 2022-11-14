@@ -1,0 +1,121 @@
+[
+  {
+    "objectID": "loaders.html",
+    "href": "loaders.html",
+    "title": "Loaders",
+    "section": "",
+    "text": "To load from an ElementTree\n\n\n\n\n element_tree_to_data (obj:<module'xml.etree.ElementTree'from'/opt/hostedt\n                       oolcache/Python/3.9.15/x64/lib/python3.9/xml/etree/\n                       ElementTree.py'>)\n\nTakes an ElementTree, and loads it into a Data instance"
+  },
+  {
+    "objectID": "loaders.html#xml",
+    "href": "loaders.html#xml",
+    "title": "Loaders",
+    "section": "xml",
+    "text": "xml\nTo load from xml\n\n\nxml_to_data\n\n xml_to_data (xml:str)\n\nTakes a xml string, and loads it into a Data instance\n\nxml_to_data(\"<root at=\\\"b\\\"><child></child></root>\")\n\n<root {'at': 'b'}>\n    <child {'at': 'b'} />\n</root>\n\n\n\n\n\nxml_file_to_data\n\n xml_file_to_data (path:str)"
+  },
+  {
+    "objectID": "loaders.html#dict",
+    "href": "loaders.html#dict",
+    "title": "Loaders",
+    "section": "dict",
+    "text": "dict\nTo load from a dict\n\n\ndict_to_data\n\n dict_to_data (arg:dict)\n\nTakes a dict, and loads it into a Data instance\n\ndict_to_data({\"name\": \"root\", \"children\": [{\"name\": \"child\", \"color\": \"blue\"}]})\n\n<root>\n    <child {'color': 'blue'} />\n</root>"
+  },
+  {
+    "objectID": "loaders.html#json",
+    "href": "loaders.html#json",
+    "title": "Loaders",
+    "section": "json",
+    "text": "json\nTo load from json\n\n\njson_to_data\n\n json_to_data (arg:str)\n\nTakes a json string, and loads it into a Data instance\n\njson_to_data('{\"name\": \"root\", \"children\": [{\"name\": \"child\"}]}')\n\n<root>\n    <child />\n</root>"
+  },
+  {
+    "objectID": "cli.html",
+    "href": "cli.html",
+    "title": "Command Line Interface",
+    "section": "",
+    "text": "Up until now, we’ve been developing the code we need to generate code. Now it’s time to wrap that code in a easy to use function to use as a command line interface. This cli will mirror the args of this function so:\n\nit accepts an xml file path as input\nit accepts a template directory as an input\n\nAlso, when a certain template does not exist, it will create one with a default template Renderer.DEFAULT_TEMPLATE.\n\n\n\n\n render (file, templates)\n\n\n# render\nrender(\"/tmp/sal.xml\", \"/tmp/templates\")\n\n\nresult = Path(destination.name).read_text().strip()\n\ntest_eq(\n    result,\n    \"\"\"\nclass UserModel(models.Model): # sigla-user-model\n    id = models.IntegerField()\n    username = models.CharField()\n    email = models.EmailField()\n\"\"\".strip(),\n)\n\n\n\n\n\n\n\n <Command hello> (*args:Any, **kwargs:Any)\n\nSimple program that greets NAME for a total of COUNT times.\n\nsal --name=Mauro --count=2\n\nHello Mauro!\nHello Mauro!\n\n\n\n\n\n\n\n is_notebook ()"
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "Core",
+    "section": "",
+    "text": "We want to build a code generator but before getting to that part, we need a class to hold some data for use while doing code generation. For that reason, here, we develop Data\nFirst off, we will have a parent-children so we will represent that with a mixin. We don’t directly put this into the main class because we’ll need it for other usages later.\n\n\n\n\n WithChildrenMixin ()\n\nAdds parent/children\nSo now, we can make the class to hold the data\n\n\n\n\n\n Data (name:str, attrs:dict[str,typing.Any]=None)\n\nData holder used during code generation. Logic is kept as separate functions\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nname\nstr\n\n\n\n\nattrs\ndict\nNone\nname of this element\n\n\n\n\n\n\nNow that we have a class to hold our data, and only for now, we declare structures to use for code generation, manually. Later, we’ll create some data-loaders.\n\njames = Data(\"person\", {\"name\": \"james\"})\n\nprint(james)\n\n# ---\ntest_eq(james.name, \"person\")\ntest_eq(james.attrs, {\"name\": \"james\"})\n\n<person {'name': 'james'} />\n\n\nWe can add children (note: a child’s attributes will also include those of his parent)\n\njames = Data(\"person\", {\"name\": \"james\"})\nolive = james.add_child(Data(\"person\", {\"name\": \"olive\"}))\nsilva = james.add_child(Data(\"person\", {\"name\": \"silva\"}))\n\nandrew = olive.add_child(Data(\"person\", {\"name\": \"andrew\"}))\n\njames.add_child(Data(\"person\"))\nolive.add_child(Data(\"person\"))\nolive.add_child(Data(\"person\"))\n\n# ---\ntest_eq(james.children[0].attrs[\"name\"], \"olive\")\n\nand a child will know its parent\n\nprint(olive.parent.attrs[\"name\"])\n\n# ---\ntest_eq(james, olive.parent)\n\njames\n\n\nTo check the number of children, simply use len\n\nlen(james)\n\n# ---\nassert len(james) == 3\n\nYou can compare elements but they are tested based on their attributes and children\n\nb = Data(\"b\", {\"age\": 22})\nc = Data(\"b\", {\"age\": 22})\nd = Data(\"d\")\nb.add_child(d)\nc.add_child(d)\n\n# ---\ntest_eq(b, c)\ntest_eq(Data(\"b\", {\"name\": \"santos\"}), Data(\"b\", {\"name\": \"santos\"}))\ntest_ne(Data(\"b\"), Data(\"c\"))\ntest_ne(Data(\"b\", {\"name\": \"silva\"}), Data(\"b\", {\"name\": \"santos\"}))\n\nYou can test if an element is a child of another\n\ntest_eq(olive in james, True)\n\n\n\n\nYou can duplicate any Data instance\n\njames.clone()\n\n<person {'name': 'james'}>\n    <person {'name': 'olive'}>\n        <person {'name': 'andrew'} />\n        <person {'name': 'olive'} />\n        <person {'name': 'olive'} />\n    </person>\n    <person {'name': 'silva'} />\n    <person {'name': 'james'} />\n</person>\n\n\n\n\n\n\n\nIf you just need to iterate through all the elemnts, use iter_data\n\n\n\n\n\n\n iter_data (obj, level=0)\n\nSimply yields parent and then children\nAltough __str__ already implements a better version of this, here’s an example, using iter_data on how to pretty print the tree of a Data instance\n\ndef print_data(a):\n    \"\"\"Prints the tree of a Data instance\"\"\"\n    for obj, level in iter_data(a):\n        print(\"   \" * level, obj.name + \"::\" + obj.attrs[\"name\"])\n\n\nprint_data(james)\n\n person::james\n    person::olive\n       person::andrew\n       person::olive\n       person::olive\n    person::silva\n    person::james\n\n\n\n\nTo do a map-like sequencial processing, you can use map_data which will return instances of MappedData\n\n\n\n\n\n\n MappedData (value)\n\nData structure used to return results from the map_data function\n\n\n\n\n\n map_data (obj:__main__.Data, process:Callable, level=0)\n\nMaps over a Data inst returning MappedData instances\nHere’s an example showing how to process all the Data instances in a tree…\n\ndef fun(data: Data, level: int = 0):\n    name = data.attrs[\"name\"]\n    level_str = \" \" * (level + 1)\n    return f\"{level_str}-I'm {name}-\"\n\n\nresult = map_data(james.clone(), fun)\n\n…and print the result\n\nfor obj, level in iter_data(result):\n    print(obj.value)\n\n -I'm james-\n  -I'm olive-\n   -I'm andrew-\n   -I'm olive-\n   -I'm olive-\n  -I'm silva-\n  -I'm james-"
+  },
+  {
+    "objectID": "core.html#jinja2",
+    "href": "core.html#jinja2",
+    "title": "Core",
+    "section": "Jinja2",
+    "text": "Jinja2\nWe need a rendering function capable of renderering a template, with filters and context variables…\n\nshowdoc.show_doc(render)\n\n\n\nrender\n\n render (template:str, filters:Optional[dict]=None, **kwargs:Any)\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ntemplate\nstr\n\ntemplate in string form\n\n\nfilters\nOptional\nNone\njinja filters\n\n\nkwargs\nAny\n\n\n\n\nReturns\nstr"
+  },
+  {
+    "objectID": "core.html#frontmatter",
+    "href": "core.html#frontmatter",
+    "title": "Core",
+    "section": "Frontmatter",
+    "text": "Frontmatter\nLater one we will also use frontmatter to make our code generator more powerful. For now, we only need some helpers"
+  },
+  {
+    "objectID": "core.html#argument-parsing",
+    "href": "core.html#argument-parsing",
+    "title": "Core",
+    "section": "Argument parsing",
+    "text": "Argument parsing\n\n\nparse_arg\n\n parse_arg (arg)\n\n\n# TODO test this\n# def eval_arg(arg, locals_):\n#    return eval(arg, None, locals_)\n\n\n\n\nparse_attrs\n\n parse_attrs (attrs)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sal",
+    "section": "",
+    "text": "Repository | PyPi | Documentation\nSal is a code generator created with familiar technologies (xml, jinja2, frontmatter, yml)."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "Sal",
+    "section": "Install",
+    "text": "Install\npip install sal-code-generator\nor\npoetry add sal-code-generator"
+  },
+  {
+    "objectID": "codegen.html",
+    "href": "codegen.html",
+    "title": "Code Generation",
+    "section": "",
+    "text": "In it’s basic form, it will combine xml files converted to Data structures, with jinja templates, to render code. Later we will also introduce some frontmatter.\nFor this, we need a basic structure to work with for generating code. As an example, we’ll be working with an hypotetical “model”\n\nstruct: Data = xml_to_data(\n    \"\"\"\n    <model name=\"User\">\n        <field name=\"id\" type=\"integer\"/>\n        <field name=\"username\" type=\"char\"/>\n        <field name=\"email\" type=\"email\"/>\n    </model>\n    \"\"\"\n)\n\n…and the basic templates used with this structure are:\n\nmodel = (\n    \"class {{ name }}Model(models.Model):\\n\"\n    \"    {%- for child in children %}\\n\"\n    \"    {{ child | render }}\\n\"\n    \"    {%- endfor %}\\n\"\n)\n\nfield = \"{{ name }} = models.{{ type | title }}Field()\""
+  },
+  {
+    "objectID": "codegen.html#template-rendering-with-jinja2",
+    "href": "codegen.html#template-rendering-with-jinja2",
+    "title": "Code Generation",
+    "section": "Template rendering with jinja2",
+    "text": "Template rendering with jinja2\nLet’s wrap up the rendering function from the core into an usable class\n\n\nJinjaTemplateRenderer\n\n JinjaTemplateRenderer ()\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "codegen.html#template-loading",
+    "href": "codegen.html#template-loading",
+    "title": "Code Generation",
+    "section": "Template loading",
+    "text": "Template loading\nWe will need a way to get the templates\n\n\nMissingTemplate\n\n MissingTemplate (name)\n\nCommon base class for all non-exit exceptions.\n\n\n\nTemplateLoader\n\n TemplateLoader ()\n\nHelper class that provides a standard way to create an ABC using inheritance.\n\n\n\nInMemoryTemplateLoader\n\n InMemoryTemplateLoader (*args, templates=None, **kwargs)\n\nWill keep a list of templates names + templates content"
+  },
+  {
+    "objectID": "codegen.html#tying-rendering-and-loading-together",
+    "href": "codegen.html#tying-rendering-and-loading-together",
+    "title": "Code Generation",
+    "section": "Tying rendering and loading together",
+    "text": "Tying rendering and loading together\nAnd finally, put these 2 together to form a class to render a Data instance\n\n\nRenderer\n\n Renderer (renderer:__main__.JinjaTemplateRenderer=None,\n           repository:__main__.TemplateLoader=None, filters=None)\n\nInitialize self. See help(type(self)) for accurate signature.\nThe entry point for this class, after __init__, is the process method"
+  },
+  {
+    "objectID": "codegen.html#code-generator-i-jinja-only",
+    "href": "codegen.html#code-generator-i-jinja-only",
+    "title": "Code Generation",
+    "section": "Code generator I (jinja only)",
+    "text": "Code generator I (jinja only)\nNow that we can render jinja2, we can make a basic code generator\n\n\nSalBasic\n\n SalBasic (renderer:Optional[__main__.Renderer]=None)\n\nInitialize self. See help(type(self)) for accurate signature.\nIt’s important to note that a parent should be able the trigger the rendering of his children (this enures the recursive nature of the template rendering). Look at the model template for an example:\n\nmodel = (\n    \"class {{ name }}Model(models.Model):\\n\"\n    \"    {%- for child in children %}\\n\"\n    \"    {{ child | render }}\\n\"\n    \"    {%- endfor %}\\n\"\n)\n\nfield = \"{{ name }} = models.{{ type | title }}Field()\"\n\nWith this, here’s a basic jinja2-based code generator using the hard coded templates:\n\nsal = SalBasic(template_renderer)\ntest_eq(\n    sal.process(struct.clone()).strip(),\n    \"\"\"\nclass UserModel(models.Model):\n    id = models.IntegerField()\n    username = models.CharField()\n    email = models.EmailField()\n\"\"\".strip(),\n)\n\ntodo: document to-file\ntodo: document black\ntodo: document wrapper\nWe are missing one more thing, we need to be able to save the result to a file and we’d like to have that info in the xml and not mess with code to get the job done. So, here’s a new struct:\n\ndestination = tempfile.NamedTemporaryFile()\n\ns_file = xml_to_data(\n    f\"\"\"\n<to-file to=\"{destination.name}\">\n    <model name=\"User\">\n        <field name=\"id\" type=\"integer\"/>\n        <field name=\"username\" type=\"char\"/>\n        <field name=\"email\" type=\"email\"/>\n    </model>\n</to-file>\"\"\"\n)\n\n\nsal = SalBasic(template_renderer)\nprint(sal.process(s_file.clone()))\n\nclass UserModel(models.Model):\n    id = models.IntegerField()\n    username = models.CharField()\n    email = models.EmailField()"
+  },
+  {
+    "objectID": "codegen.html#code-generator-ii-jinja-frontmatter",
+    "href": "codegen.html#code-generator-ii-jinja-frontmatter",
+    "title": "Code Generation",
+    "section": "Code generator II (jinja + frontmatter)",
+    "text": "Code generator II (jinja + frontmatter)\nTo make this even more powerful, we can use frontmatter to embed meta data into the templates themself and merge those with the attributes of the node.\nTo make it even more powerful, the frontmatter can contain any attribute from the struct so it needs to be extracted in a raw formar, rendered and then extracted. But first, we need new templates..\n\nmodel = \"\"\"\n---\nreference:  \"sigla-{{ node.attrs.name | lower }}-model\"\n---\nclass {{ name }}Model(models.Model): # {{ reference }}\n    {% for child in children -%}\n    {{ child | render }}\n    {% endfor %}\n\"\"\"\n\nfield = \"\"\"\n---\nreference:  \"sigla-{{ node.name | lower }}-model\"\n---\n{{ name }} = models.{{ type | title }}Field() \n\"\"\"\n\n\nfm = FrontMatter().get_raw_frontmatter(model)\ntest_eq(fm, 'reference:  \"sigla-{{ node.attrs.name | lower }}-model\"')\n\ntodo\n\n\nFrontMatterInMemoryTemplateLoader\n\n FrontMatterInMemoryTemplateLoader (*args, **kwargs)\n\nWill keep a list of templates names + templates content\n\n\n\nFrontMatterMixin\n\n FrontMatterMixin (*args, **kwargs)\n\nInitialize self. See help(type(self)) for accurate signature.\ntodo\n\n\n\nSal\n\n Sal (renderer:Optional[__main__.Renderer]=None)\n\nInitialize self. See help(type(self)) for accurate signature.\n\nrepository = FrontMatterInMemoryTemplateLoader(\n    templates={\n        \"model\": model,\n        \"field\": field,\n    }\n)\ntemplate_renderer2 = Renderer(repository=repository, renderer=JinjaTemplateRenderer())\n\nsal = Sal(template_renderer2)\ntest_eq(\n    sal.process(struct.clone()).strip(),\n    \"\"\"\nclass UserModel(models.Model): # sigla-user-model\n    id = models.IntegerField()\n    username = models.CharField()\n    email = models.EmailField()\n\"\"\".strip(),\n)\n\n\nxml = xml_to_data(\n    \"\"\"\n<black>\n    <W>\n        <a/>\n        <a/>\n        <b/>\n    </W>\n</black>\n\"\"\"\n)\n\n\nw = \"\"\"\n---\n---\n{%- for i in node|imports|sum(None, [])|unique %}\n{{ i }}\n{%- endfor %}\n\nclass W:\n    {%- for child in children %}\n    {{ child | render }}\n    {%- endfor %}\n    \n\"\"\"\n\n\na = \"\"\"\n---\nimports: \n    - from AAA import A\n---\na = AAA( )\n\"\"\"\nb = \"\"\"\n---\nimports: \n    - from BBB import B\n---\nb = BBB()\n\"\"\"\n\nrepository = FrontMatterInMemoryTemplateLoader(\n    templates={\n        \"W\": w,\n        \"a\": a,\n        \"b\": b,\n    }\n)\n\n\ndef imports(data: Data):\n    imports_ = [d.attrs.get(\"imports\") for d, _ in iter_data(data)]\n    imports_ = [d for d in imports_ if d]\n    return imports_\n\n\ntemplate_renderer2 = Renderer(\n    repository=repository,\n    renderer=JinjaTemplateRenderer(),\n    filters={\"imports\": imports},\n)\n\n\nsal = Sal(template_renderer2)\nres = sal.process(xml)\ntest_eq(\n    res.strip(),\n    \"\"\"\nfrom AAA import A\nfrom BBB import B\n\n\nclass W:\n    a = AAA()\n    a = AAA()\n    b = BBB()\n\"\"\".strip(),\n)\n\n'\\nfrom AAA import A\\nfrom BBB import B\\n\\nclass W:\\n    a = AAA( )\\n    a = AAA( )\\n    b = BBB()'"
+  }
+]
