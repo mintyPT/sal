@@ -4,7 +4,7 @@
 __all__ = ['WithChildrenMixin', 'Data', 'iter_data', 'MappedData', 'map_data', 'render', 'FrontMatter', 'parse_arg',
            'parse_attrs']
 
-# %% ../nbs/00_core.ipynb 3
+# %% ../nbs/00_core.ipynb 4
 from typing import Any
 from copy import deepcopy
 from textwrap import indent
@@ -14,7 +14,7 @@ from jinja2 import Environment, BaseLoader, Template, StrictUndefined
 from frontmatter.default_handlers import YAMLHandler
 from frontmatter.util import u
 
-# %% ../nbs/00_core.ipynb 8
+# %% ../nbs/00_core.ipynb 9
 class WithChildrenMixin:
     """Adds `parent`/`children`"""
 
@@ -36,7 +36,7 @@ class WithChildrenMixin:
     def set_parent(self, parent: "Data"):
         self.parent = parent
 
-# %% ../nbs/00_core.ipynb 10
+# %% ../nbs/00_core.ipynb 11
 class Data(WithChildrenMixin):
     """Data holder used during code generation. Logic is kept as separate functions"""
 
@@ -91,14 +91,14 @@ class Data(WithChildrenMixin):
 
     __repr__ = __str__
 
-# %% ../nbs/00_core.ipynb 32
+# %% ../nbs/00_core.ipynb 33
 def iter_data(obj, level=0):
     """Simply yields parent and then children"""
     yield obj, level
     for child in obj.children:
         yield from iter_data(child, level=level + 1)
 
-# %% ../nbs/00_core.ipynb 37
+# %% ../nbs/00_core.ipynb 38
 class MappedData(WithChildrenMixin):
     """Data structure used to return results from the `map_data` function"""
 
@@ -106,7 +106,7 @@ class MappedData(WithChildrenMixin):
         self.value = value
         super().__init__()
 
-# %% ../nbs/00_core.ipynb 38
+# %% ../nbs/00_core.ipynb 39
 def map_data(obj: Data, process: Callable, level=0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
     child_results = [map_data(c, process, level=level + 1) for c in obj.children]
@@ -116,11 +116,11 @@ def map_data(obj: Data, process: Callable, level=0) -> MappedData:
         data.add_child(c)
     return data
 
-# %% ../nbs/00_core.ipynb 45
+# %% ../nbs/00_core.ipynb 46
 def _get_env():
     return Environment(loader=BaseLoader(), undefined=StrictUndefined)
 
-# %% ../nbs/00_core.ipynb 47
+# %% ../nbs/00_core.ipynb 48
 def render(
     template: str,  # template in string form
     filters: Optional[dict] = None,  # jinja filters
@@ -137,7 +137,7 @@ def render(
 
     return result
 
-# %% ../nbs/00_core.ipynb 52
+# %% ../nbs/00_core.ipynb 53
 class FrontMatter:
     def __init__(self, handler=None):
         if handler is None:
@@ -193,10 +193,10 @@ class FrontMatter:
         if frontmatter:
             return frontmatter.strip()
 
-# %% ../nbs/00_core.ipynb 54
+# %% ../nbs/00_core.ipynb 55
 import json
 
-# %% ../nbs/00_core.ipynb 55
+# %% ../nbs/00_core.ipynb 56
 def parse_arg(arg):
     try:
         v = json.loads(arg)
@@ -204,7 +204,7 @@ def parse_arg(arg):
         v = arg
     return v
 
-# %% ../nbs/00_core.ipynb 58
+# %% ../nbs/00_core.ipynb 59
 def parse_attrs(attrs):
     for k, y in attrs.items():
         attrs[k] = parse_arg(y)
