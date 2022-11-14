@@ -50,8 +50,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1, h2 {
-    background: #f0f0f0;
-    padding: 30px;
+    border-left: 10px solid #f0f0f0;
+    padding: 10px;
 }
 
 h1 { font-size: 80px; }

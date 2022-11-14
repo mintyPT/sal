@@ -15,3 +15,9 @@ frontmatter, yml).
 ``` sh
 pip install sal-code-generator
 ```
+
+or
+
+``` sh
+poetry add sal-code-generator
+```

@@ -4,7 +4,7 @@
 __all__ = ['JinjaTemplateRenderer', 'TemplateLoader', 'MissingTemplate', 'InMemoryTemplateLoader', 'Renderer', 'SalBasic',
            'FrontMatterMixin', 'FrontMatterInMemoryTemplateLoader', 'Sal']
 
-# %% ../nbs/02_code_generation.ipynb 2
+# %% ../nbs/02_code_generation.ipynb 3
 from .loaders import xml_to_data
 from pathlib import Path
 from .core import Data, iter_data, render, FrontMatter
@@ -16,30 +16,32 @@ from textwrap import dedent
 from yaml.parser import ParserError
 from black import format_str, FileMode
 
-# %% ../nbs/02_code_generation.ipynb 11
+# %% ../nbs/02_code_generation.ipynb 12
 class JinjaTemplateRenderer:
-    def render(self, template = None, **kwargs) -> str:
+    def render(self, template=None, **kwargs) -> str:
         if template is None:
             raise RuntimeError("Missing template")
         return render(template, **kwargs)
 
-# %% ../nbs/02_code_generation.ipynb 13
+# %% ../nbs/02_code_generation.ipynb 14
 class TemplateLoader(abc.ABC):
     @abc.abstractmethod
     def get_template(self, name: str) -> str:
         """Separate method to allow an override to the template, before returning"""
         raise NotImplementedError
 
+
 class MissingTemplate(Exception):
     def __init__(self, name):
         super().__init__(f"The template {name} is missing")
         self.name = name
 
-# %% ../nbs/02_code_generation.ipynb 14
+# %% ../nbs/02_code_generation.ipynb 15
 class InMemoryTemplateLoader(TemplateLoader):
     """
-        Will keep a list of templates names + templates content
+    Will keep a list of templates names + templates content
     """
+
     def __init__(self, *args, templates=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.templates = templates
@@ -48,29 +50,27 @@ class InMemoryTemplateLoader(TemplateLoader):
         if name in self.templates.keys():
             return self.templates[name]
         raise MissingTemplate(name)
-        
+
     @classmethod
     def from_directory(cls, directory):
         path = Path(directory)
-        glob = path.glob('*.jinja2')
+        glob = path.glob("*.jinja2")
 
         templates_raw = {}
         for p in glob:
-            model_name = p.name.replace('.jinja2', '')
-            with open(p, 'r') as h:
+            model_name = p.name.replace(".jinja2", "")
+            with open(p, "r") as h:
                 tpl = h.read()
             templates_raw[model_name] = tpl
 
-        return cls(
-            templates=templates_raw
-        )
+        return cls(templates=templates_raw)
 
-# %% ../nbs/02_code_generation.ipynb 17
+# %% ../nbs/02_code_generation.ipynb 18
 class Renderer:
-    
+
     # if no template is passed in, we use the DEFAULT_TEMPLATE
     DEFAULT_TEMPLATE = "{% for child in children %}{{ child | render }}{% endfor %}"
-    
+
     def __init__(
         self,
         *,
@@ -97,7 +97,7 @@ class Renderer:
     def process(self, data: Data) -> str:
         return self.render(data)
 
-# %% ../nbs/02_code_generation.ipynb 21
+# %% ../nbs/02_code_generation.ipynb 22
 class SalBasic:
     def __init__(self, renderer: Optional[Renderer] = None):
         self.renderer = renderer or Renderer()
@@ -109,21 +109,17 @@ class SalBasic:
         return self.renderer.process(data)
 
     def action_to_file(self, data: Data):
-        rendered = self.renderer.render(
-            data, template=Renderer.DEFAULT_TEMPLATE
-        )
+        rendered = self.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
         to = data.attrs["to"]
         with open(to, "w") as h:
             h.write(rendered)
         return rendered
 
     def action_black(self, data: Data):
-        rendered = self.renderer.render(
-            data, template=Renderer.DEFAULT_TEMPLATE
-        )
+        rendered = self.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
         print(repr(rendered))
         return format_str(rendered, mode=FileMode())
-    
+
     def process_data(self, data: Data):
         if data.name == "to-file":
             return self.action_to_file(data)
@@ -138,7 +134,7 @@ class SalBasic:
         data = self.pre_process_data(data)
         return self.process_data(data)
 
-# %% ../nbs/02_code_generation.ipynb 41
+# %% ../nbs/02_code_generation.ipynb 42
 class FrontMatterMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -152,11 +148,11 @@ class FrontMatterMixin:
             template = self.frontmatter_handler.get_raw_frontmatter(template)
         return template
 
-    
+
 class FrontMatterInMemoryTemplateLoader(FrontMatterMixin, InMemoryTemplateLoader):
     pass
 
-# %% ../nbs/02_code_generation.ipynb 43
+# %% ../nbs/02_code_generation.ipynb 44
 class Sal(SalBasic):
     def get_frontmatter_attributes_for_data(self, template: str, data: Data) -> dict:
         rendered = self.renderer.render(data, template)
@@ -165,17 +161,15 @@ class Sal(SalBasic):
 
     def pre_process_data(self, data: Data):
         for d, _ in iter_data(data):
-            
-            if d.name in ['to-file', 'black']:
+
+            if d.name in ["to-file", "black"]:
                 continue
-            
+
             # load template
-            template = self.renderer.repository.get_template(
-                d.name, frontmatter=True
-            )
+            template = self.renderer.repository.get_template(d.name, frontmatter=True)
             # handle front matter
             new_attributes = self.get_frontmatter_attributes_for_data(template, d)
-            
+
             # update attributes
             d.attrs.update(new_attributes)
         return data
