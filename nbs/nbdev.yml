@@ -2,7 +2,7 @@ project:
   output-dir: _docs
 
 website:
-  title: "sal"
+  title: "sal-code-generator"
   site-url: "https://mintyPT.github.io/sal"
   description: "A salty code generator to season your code with generated code"
   repo-branch: main
