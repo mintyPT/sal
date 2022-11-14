@@ -4,5 +4,5 @@ website:
       - index.ipynb
       - 00_core.ipynb
       - 01_loaders.ipynb
-      - 02_code_generation.ipynb
+      - 02_codegen.ipynb
       - 03_cli.ipynb
