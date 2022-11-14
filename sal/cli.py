@@ -39,7 +39,7 @@ def hello(count, name):
     for x in range(count):
         click.echo(f"Hello {name}!")
 
-# %% ../nbs/03_cli.ipynb 13
+# %% ../nbs/03_cli.ipynb 14
 def is_notebook() -> bool:
     try:
         shell = get_ipython().__class__.__name__
@@ -52,10 +52,6 @@ def is_notebook() -> bool:
     except NameError:
         return False  # Probably standard Python interpreter
 
-# %% ../nbs/03_cli.ipynb 14
-print('='*120)
-print('='*120)
-print('='*120)
-print('='*120)
+# %% ../nbs/03_cli.ipynb 15
 if __name__ == "__main__" and not is_notebook():
     hello()
