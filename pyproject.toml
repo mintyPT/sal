@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "sal"
-version = "0.0.5"
+name = "sal-code-generator"
+version = "0.0.24"
 description = ""
 authors = ["mauro santos <mauro.goncalo@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "sal" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -24,4 +27,4 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.scripts]
-sal = "sal.cli:hello"
+sal = "sal.cli:main"

@@ -7,7 +7,7 @@ __all__ = ['JinjaTemplateRenderer', 'TemplateLoader', 'MissingTemplate', 'InMemo
 # %% ../nbs/02_codegen.ipynb 4
 from .loaders import xml_to_data
 from pathlib import Path
-from .core import Data, iter_data, render, FrontMatter
+from .core import Data, render, FrontMatter
 from jinja2 import Environment, BaseLoader, Template
 from typing import Optional, Any
 import abc
@@ -160,7 +160,7 @@ class Sal(SalBasic):
         return parsed
 
     def pre_process_data(self, data: Data):
-        for d, _ in iter_data(data):
+        for d, _ in data:
 
             if d.name in ["to-file", "black"]:
                 continue
