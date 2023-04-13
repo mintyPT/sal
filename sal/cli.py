@@ -51,7 +51,7 @@ def render(filename, folder):
     _render(filename, str(Path(folder) / "templates"))
 
 
-# %% ../nbs/03_cli.ipynb 15
+# %% ../nbs/03_cli.ipynb 14
 def is_notebook() -> bool:
     try:
         shell = get_ipython().__class__.__name__
@@ -64,6 +64,6 @@ def is_notebook() -> bool:
     except NameError:
         return False  # Probably standard Python interpreter
 
-# %% ../nbs/03_cli.ipynb 16
+# %% ../nbs/03_cli.ipynb 15
 if __name__ == "__main__" and not is_notebook():
     main()
