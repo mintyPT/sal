@@ -33,7 +33,7 @@ class TemplateLoader(abc.ABC):
 
 class MissingTemplate(Exception):
     def __init__(self, name):
-        super().__init__(f"The template {name} is missing")
+        super().__init__(f"The template '{name}' is missing")
         self.name = name
 
 # %% ../nbs/02_codegen.ipynb 16
@@ -86,13 +86,15 @@ class Renderer:
         if template is None:
             template = self.repository.get_template(data.name)
 
-        return self.renderer.render(
+        ret = self.renderer.render(
             template=template,
             **data.attrs,
             filters={**self.filters, "render": self.render},
             node=data,
             children=data.children,
         )
+
+        return ret
 
     def process(self, data: Data) -> str:
         return self.render(data)
@@ -117,13 +119,12 @@ class SalBasic:
 
     def action_black(self, data: Data):
         rendered = self.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
-        print(repr(rendered))
         return format_str(rendered, mode=FileMode())
 
     def process_data(self, data: Data):
         if data.name == "to-file":
             return self.action_to_file(data)
-        if data.name == "black":
+        elif data.name == "black":
             return self.action_black(data)
         elif data.name == "wrapper":
             return [self.process(d) for d in data.children]
@@ -162,7 +163,7 @@ class Sal(SalBasic):
     def pre_process_data(self, data: Data):
         for d, _ in data:
 
-            if d.name in ["to-file", "black"]:
+            if d.name in ["to-file", "black", "wrapper"]:
                 continue
 
             # load template

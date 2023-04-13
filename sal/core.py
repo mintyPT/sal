@@ -12,6 +12,7 @@ from typing import Callable, Optional
 from jinja2 import Environment, BaseLoader, Template, StrictUndefined
 from frontmatter.default_handlers import YAMLHandler
 from frontmatter.util import u
+from textwrap import dedent
 
 # %% ../nbs/00_core.ipynb 9
 class WithChildrenMixin:
@@ -193,7 +194,7 @@ class FrontMatter:
 
         try:
             raw_frontmatter = self.handler.load(raw_frontmatter)
-        except ParserError as e:
+        except Exception as e:
             msg = dedent(
                 f"""
             ===
