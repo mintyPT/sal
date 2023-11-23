@@ -15,7 +15,7 @@ def element_tree_to_data(obj: ElementTree) -> Data:
     data = Data(obj.tag, attributes)
     children = [element_tree_to_data(c) for c in obj]
     for c in children:
-        data.add_child(c)
+        data.append(c)
     return data
 
 # %% ../nbs/01_loaders.ipynb 9
@@ -41,7 +41,7 @@ def dict_to_data(arg: dict) -> Data:
     
     data = Data(name, arg)
     for c in children:
-        data.add_child(dict_to_data(c))
+        data.append(dict_to_data(c))
     return data
 
 # %% ../nbs/01_loaders.ipynb 20

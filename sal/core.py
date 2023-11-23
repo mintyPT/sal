@@ -30,7 +30,7 @@ class WithChildrenMixin:
     def __contains__(self, element):
         return element in self.children
 
-    def add_child(self, child: "Data"):
+    def append(self, child: "Data"):
         """
         Add a child element to the children list and set its parent to self.
         """
@@ -147,7 +147,7 @@ def map_data(obj: Data, process: Callable, level=0) -> MappedData:
     value = process(obj, level)
     data = MappedData(value)
     for c in child_results:
-        data.add_child(c)
+        data.append(c)
     return data
 
 # %% ../nbs/00_core.ipynb 44
