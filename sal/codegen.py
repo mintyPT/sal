@@ -13,7 +13,8 @@ from yaml.parser import ParserError
 from black import format_str, FileMode
 
 from .loaders import xml_to_data
-from .core import Data, FrontMatter
+from .core import Data
+from .frontmatter import FrontMatter
 from .templates import Renderer, InMemoryTemplateLoader, JinjaTemplateRenderer
 
 # %% ../nbs/02_codegen.ipynb 11
