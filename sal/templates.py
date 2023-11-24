@@ -4,8 +4,11 @@
 __all__ = ['render', 'JinjaTemplateRenderer', 'TemplateLoader', 'MissingTemplate', 'InMemoryTemplateLoader', 'Renderer']
 
 # %% ../nbs/templates.ipynb 2
+from .core import Data
 from typing import Any, Optional
 from jinja2 import Environment, BaseLoader, Template, StrictUndefined
+
+import abc
 
 # %% ../nbs/templates.ipynb 4
 def _get_env():
@@ -79,7 +82,6 @@ class InMemoryTemplateLoader(TemplateLoader):
 
 # %% ../nbs/templates.ipynb 16
 class Renderer:
-
     # if no template is passed in, we use the DEFAULT_TEMPLATE
     DEFAULT_TEMPLATE = "{% for child in children %}{{ child | render }}{% endfor %}"
 

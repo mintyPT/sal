@@ -26,26 +26,26 @@ def xml_to_data(xml: str) -> Data:
 
 # %% ../nbs/01_loaders.ipynb 11
 def xml_file_to_data(path: str) -> Data:
-    with open(path, 'r') as h:
+    with open(path, "r") as h:
         return xml_to_data(h.read())
 
 # %% ../nbs/01_loaders.ipynb 15
 def dict_to_data(arg: dict) -> Data:
     """Takes a dict, and loads it into a Data instance"""
-    name = arg['name']
-    del arg['name']
-    
-    children = arg.get('children', [])
+    name = arg["name"]
+    del arg["name"]
+
+    children = arg.get("children", [])
     if children:
-        del arg['children']
-    
+        del arg["children"]
+
     data = Data(name, arg)
     for c in children:
         data.append(dict_to_data(c))
     return data
 
 # %% ../nbs/01_loaders.ipynb 20
-def json_to_data(arg:str) -> Data:
+def json_to_data(arg: str) -> Data:
     """Takes a json string, and loads it into a Data instance"""
     j = loads(arg)
     return dict_to_data(j)

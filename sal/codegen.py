@@ -4,16 +4,17 @@
 __all__ = ['SalBasic', 'FrontMatterMixin', 'FrontMatterInMemoryTemplateLoader', 'Sal']
 
 # %% ../nbs/02_codegen.ipynb 2
-from .loaders import xml_to_data
 from pathlib import Path
-from .core import Data, render, FrontMatter
 from jinja2 import Environment, BaseLoader, Template
 from typing import Optional, Any
-import abc
 from jinja2 import StrictUndefined
 from textwrap import dedent
 from yaml.parser import ParserError
 from black import format_str, FileMode
+
+from .loaders import xml_to_data
+from .core import Data, FrontMatter
+from .templates import Renderer, InMemoryTemplateLoader, JinjaTemplateRenderer
 
 # %% ../nbs/02_codegen.ipynb 11
 class SalBasic:
@@ -78,7 +79,6 @@ class Sal(SalBasic):
 
     def pre_process_data(self, data: Data):
         for d, _ in data:
-
             if d.name in ["to-file", "black", "wrapper"]:
                 continue
 
