@@ -3,13 +3,29 @@
 # https://pre-commit.com/hooks.html
 repos:
 - repo: https://github.com/python-poetry/poetry
-  rev: '1.4.0'  # add version here
+  rev: '1.7.0'  # add version here
   hooks:
     - id: poetry-check
     - id: poetry-lock
 - repo: https://github.com/fastai/nbdev
-  rev: 2.3.11
+  rev: 2.3.13
   hooks:
   - id: nbdev_clean
   - id: nbdev_export
-
+- repo: local
+  hooks:
+    - id: mypy
+      name: mypy
+      entry: mypy
+      language: system
+      types: [python]
+    - id: ruff
+      name: ruff
+      entry: ruff
+      language: system
+      types: [python]
+    - id: black
+      name: black
+      entry: black
+      language: system
+      types: [python]
