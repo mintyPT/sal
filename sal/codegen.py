@@ -8,7 +8,7 @@ from typing import Optional
 from black import format_str, FileMode
 from .core import Data
 from .frontmatter import FrontMatter
-from .templates import Renderer, InMemoryTemplateLoader, JinjaTemplateRenderer
+from .templates import Renderer, InMemoryTemplateLoader
 
 # %% ../nbs/02_codegen.ipynb 11
 class SalBasic:

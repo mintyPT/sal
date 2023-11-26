@@ -7,7 +7,6 @@ __all__ = ["FrontMatter"]
 from frontmatter.default_handlers import YAMLHandler
 from frontmatter.util import u
 from textwrap import dedent
-from pathlib import Path
 
 # %% ../nbs/99_frontmatter.ipynb 5
 class FrontMatter:

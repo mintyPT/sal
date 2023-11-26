@@ -24,6 +24,7 @@ repos:
       entry: ruff
       language: system
       types: [python]
+      exclude: ^(sal\/_modidx\.py)$
     - id: black
       name: black
       entry: black
