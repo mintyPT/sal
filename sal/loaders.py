@@ -13,9 +13,10 @@ __all__ = [
 from .core import Data
 from json import loads
 from xml.etree import ElementTree
+from typing import Any
 
 # %% ../nbs/01_loaders.ipynb 6
-def element_tree_to_data(obj: ElementTree) -> Data:
+def element_tree_to_data(obj: ElementTree.Element) -> Data:
     """Takes an ElementTree, and loads it into a Data instance"""
     attributes = obj.attrib.copy()
     data = Data(obj.tag, attributes)
@@ -28,7 +29,7 @@ def element_tree_to_data(obj: ElementTree) -> Data:
 # %% ../nbs/01_loaders.ipynb 9
 def xml_to_data(xml: str) -> Data:
     """Takes a xml string, and loads it into a Data instance"""
-    obj: ElementTree = ElementTree.fromstring(xml)
+    obj: ElementTree.Element = ElementTree.fromstring(xml)
     return element_tree_to_data(obj)
 
 

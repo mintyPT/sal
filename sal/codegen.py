@@ -4,35 +4,41 @@
 __all__ = ["SalBasic", "FrontMatterMixin", "FrontMatterInMemoryTemplateLoader", "Sal"]
 
 # %% ../nbs/02_codegen.ipynb 2
-from typing import Optional
+from typing import Optional, Generator, Any
 from black import format_str, FileMode
+from .loaders import xml_to_data
 from .core import Data
 from .frontmatter import FrontMatter
-from .templates import Renderer, InMemoryTemplateLoader
+from sal.templates import (
+    Renderer,
+    InMemoryTemplateLoader,
+    JinjaTemplateRenderer,
+    TemplateLoader,
+)
 
 # %% ../nbs/02_codegen.ipynb 11
 class SalBasic:
-    def __init__(self, renderer: Optional[Renderer] = None):
-        self.renderer = renderer or Renderer()
+    def __init__(self, renderer: Renderer = None):
+        self.renderer = renderer
 
-    def pre_process_data(self, data: Data):
+    def pre_process_data(self, data: Data) -> Data:
         return data
 
-    def action_default(self, data: Data):
+    def action_default(self, data: Data) -> Any:
         return self.renderer.process(data)
 
-    def action_to_file(self, data: Data):
+    def action_to_file(self, data: Data) -> str:
         rendered = self.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
         to = data.attrs["to"]
         with open(to, "w") as h:
             h.write(rendered)
         return rendered
 
-    def action_black(self, data: Data):
+    def action_black(self, data: Data) -> str:
         rendered = self.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
         return format_str(rendered, mode=FileMode())
 
-    def process_data(self, data: Data):
+    def process_data(self, data: Data) -> str | Any:
         if data.name == "to-file":
             return self.action_to_file(data)
         elif data.name == "black":
@@ -42,24 +48,26 @@ class SalBasic:
         else:
             return self.action_default(data)
 
-    def process(self, data: Data):
+    def process(self, data: Data) -> str | Any:
         data = self.pre_process_data(data)
         return self.process_data(data)
 
 
 # %% ../nbs/02_codegen.ipynb 31
-class FrontMatterMixin:
-    def __init__(self, *args, **kwargs):
+class FrontMatterMixin(TemplateLoader):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.frontmatter_handler = FrontMatter()
 
-    def get_template(self, data: Data, frontmatter=False):
-        template = super().get_template(data)
+    def get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
+        template = super().get_template(name)  # type: ignore[safe-super]
+
         if not frontmatter:
-            template = self.frontmatter_handler.get_content(template)
-        else:
-            template = self.frontmatter_handler.get_raw_frontmatter(template)
-        return template
+            ret: str = self.frontmatter_handler.get_content(template)
+            return ret
+
+        ret2: str = self.frontmatter_handler.get_raw_frontmatter(template)  # type: ignore[safe-super]
+        return ret2
 
 
 class FrontMatterInMemoryTemplateLoader(FrontMatterMixin, InMemoryTemplateLoader):
@@ -70,10 +78,10 @@ class FrontMatterInMemoryTemplateLoader(FrontMatterMixin, InMemoryTemplateLoader
 class Sal(SalBasic):
     def get_frontmatter_attributes_for_data(self, template: str, data: Data) -> dict:
         rendered = self.renderer.render(data, template)
-        parsed = self.renderer.repository.frontmatter_handler.parse(rendered)
+        parsed: dict = self.renderer.repository.frontmatter_handler.parse(rendered)
         return parsed
 
-    def pre_process_data(self, data: Data):
+    def pre_process_data(self, data: Data) -> Data:
         for d, _ in data:
             if d.name in ["to-file", "black", "wrapper"]:
                 continue

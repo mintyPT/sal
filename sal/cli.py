@@ -3,41 +3,44 @@
 # %% auto 0
 __all__ = ["main", "render", "is_notebook"]
 
-# %% ../nbs/03_cli.ipynb 4
+# %% ../nbs/03_cli.ipynb 3
 import click
 from pathlib import Path
 from .core import Data
 from .loaders import xml_file_to_data
+from .templates import MissingTemplate
+from IPython import get_ipython
 from sal.codegen import (
     Sal,
     FrontMatterInMemoryTemplateLoader,
     Renderer,
     JinjaTemplateRenderer,
-    MissingTemplate,
 )
 
-# %% ../nbs/03_cli.ipynb 7
-def _render(file, templates):
+from typing import Any
+
+# %% ../nbs/03_cli.ipynb 6
+def _render(file: str, directory: str) -> str | Any:
     try:
-        repository = FrontMatterInMemoryTemplateLoader.from_directory(templates)
+        repository = FrontMatterInMemoryTemplateLoader.from_directory(directory)
         renderer = Renderer(repository=repository, renderer=JinjaTemplateRenderer())
         sal = Sal(renderer)
 
         struct: Data = xml_file_to_data(file)
         return sal.process(struct)
     except MissingTemplate as e:
-        path = Path(templates) / f"{e.name}.jinja2"
+        path = Path(directory) / f"{e.name}.jinja2"
         path.write_text(Renderer.DEFAULT_TEMPLATE)
-        return render(file, templates)
+        return render(file, directory)
 
 
-# %% ../nbs/03_cli.ipynb 12
+# %% ../nbs/03_cli.ipynb 11
 @click.group()
-def main():
+def main() -> None:
     pass
 
 
-# %% ../nbs/03_cli.ipynb 13
+# %% ../nbs/03_cli.ipynb 12
 # TODO : init command
 # - create : sal.xml file
 # - create : sal folder
@@ -47,13 +50,13 @@ def main():
 @main.command()
 @click.option("--filename", type=click.Path(exists=True), default="./sal.xml")
 @click.option("--folder", type=click.Path(exists=True), default="./sal")
-def render(filename, folder):
+def render(filename: str, folder: str) -> None:
     click.echo(f"⚠️ {filename=}")
     click.echo(f"⚠️ {folder=}")
     _render(filename, str(Path(folder) / "templates"))
 
 
-# %% ../nbs/03_cli.ipynb 14
+# %% ../nbs/03_cli.ipynb 13
 def is_notebook() -> bool:
     try:
         shell = get_ipython().__class__.__name__
@@ -67,6 +70,6 @@ def is_notebook() -> bool:
         return False  # Probably standard Python interpreter
 
 
-# %% ../nbs/03_cli.ipynb 15
+# %% ../nbs/03_cli.ipynb 14
 if __name__ == "__main__" and not is_notebook():
     main()

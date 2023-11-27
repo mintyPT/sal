@@ -4,18 +4,19 @@
 __all__ = ["FrontMatter"]
 
 # %% ../nbs/99_frontmatter.ipynb 2
-from frontmatter.default_handlers import YAMLHandler
-from frontmatter.util import u
+from frontmatter.default_handlers import YAMLHandler  # type: ignore[import-untyped]
+from frontmatter.util import u  # type: ignore[import-untyped]
 from textwrap import dedent
+from typing import Any
 
 # %% ../nbs/99_frontmatter.ipynb 5
 class FrontMatter:
-    def __init__(self, handler=None):
+    def __init__(self, handler: YAMLHandler | None = None):  # type: ignore[no-any-unimported]
         if handler is None:
             handler = YAMLHandler()
         self.handler = handler
 
-    def split(self, raw_content, *, encoding="utf-8"):
+    def split(self, raw_content: str, *, encoding: str = "utf-8") -> Any:
         raw_content = u(raw_content, encoding).strip()
 
         try:
@@ -25,7 +26,7 @@ class FrontMatter:
 
         return fm, content
 
-    def parse(self, raw_frontmatter, *, metadata=None):
+    def parse(self, raw_frontmatter: Any, *, metadata: Any = None) -> Any:
         if metadata is None:
             metadata = {}
 
@@ -54,12 +55,15 @@ class FrontMatter:
 
         return metadata
 
-    def get_content(self, template):
+    def get_content(self, template: str) -> str:
         frontmatter, content = self.split(template)
-        return content.strip()
+        ret: str = content.strip()
+        return ret
 
-    def get_raw_frontmatter(self, template):
+    def get_raw_frontmatter(self, template: str) -> str:
         resp = self.split(template)
         frontmatter, content = resp
         if frontmatter:
-            return frontmatter.strip()
+            ret: str = frontmatter.strip()
+            return ret
+        return ""

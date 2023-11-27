@@ -7,7 +7,7 @@ __all__ = ["WithChildrenMixin", "Data", "MappedData", "map_data"]
 from copy import deepcopy
 from textwrap import indent
 from collections import ChainMap
-from typing import Callable, Any
+from typing import Callable, Any, Generator, Sequence, Optional
 
 # %% ../nbs/00_core.ipynb 7
 class WithChildrenMixin:
@@ -15,36 +15,36 @@ class WithChildrenMixin:
     Adds `parent`/`children` functionality to a class.
     """
 
-    def __init__(self):
-        self.parent = None
-        self.children = []
+    def __init__(self) -> None:
+        self.parent: "WithChildrenMixin" | None = None
+        self.children: Sequence["WithChildrenMixin"] = []
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.children)
 
-    def __contains__(self, element):
-        return element in self.children
+    def __contains__(self, child: "WithChildrenMixin") -> bool:
+        return child in self.children
 
-    def append(self, child: "Data"):
+    def append(self, child: "WithChildrenMixin") -> "WithChildrenMixin":
         """
         Add a child element to the children list and set its parent to self.
         """
-        self.children.append(child)
+        self.children.append(child)  # type: ignore[attr-defined]
         child.set_parent(self)
         return child
 
-    def set_parent(self, parent: "Data"):
+    def set_parent(self, parent: "WithChildrenMixin") -> None:
         """
         Set the parent element of self.
         """
         self.parent = parent
 
-    def __iter__(self):
-        def iter_data(obj, level=0):
+    def __iter__(self) -> Generator:
+        def iter_data(obj: "WithChildrenMixin", level: int | None = 0) -> Generator:
             """Simply yields parent and then children"""
             yield obj, level
             for child in obj.children:
-                yield from iter_data(child, level=level + 1)
+                yield from iter_data(child, level=(level or 0) + 1)
 
         return iter_data(self)
 
@@ -55,11 +55,14 @@ class Data(WithChildrenMixin):
     Data holder used during code generation. Logic is kept as separate functions.
     """
 
+    parent: Optional["Data"]
+    children: Sequence["Data"]
+
     def __init__(
         self,
         name: str,  # Name of this element
-        attrs: dict[str, Any] = None,  # Attributes for this element
-    ):
+        attrs: dict[str, Any] | None = None,  # Attributes for this element
+    ) -> None:
         """
         Initialize Data object.
 
@@ -74,7 +77,7 @@ class Data(WithChildrenMixin):
         super().__init__()
 
     @property
-    def attrs(self):
+    def attrs(self) -> ChainMap:
         """
         Get the attributes for this element, merged with
         parent's attributes, if available.
@@ -83,25 +86,25 @@ class Data(WithChildrenMixin):
             return ChainMap(self._attrs, self.parent.attrs)
         return ChainMap(self._attrs)
 
-    def clone(self):
+    def clone(self) -> "Data":
         """
         Create a deep copy of this Data object.
 
         """
         return deepcopy(self)
 
-    def __eq__(self, a):
+    def __eq__(self, a: Any) -> bool:
         """
         Compare this Data object with another object for equality.
 
         """
         print("==")
-        same_name = self.name == a.name
-        same_attrs = self.attrs == a.attrs
-        same_children = self.children == a.children
+        same_name: bool = self.name == a.name
+        same_attrs: bool = self.attrs == a.attrs
+        same_children: bool = self.children == a.children
         return same_name and same_attrs and same_children
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Get the string representation of this Data object.
 
@@ -109,8 +112,7 @@ class Data(WithChildrenMixin):
         is_self_closing = not self.children
 
         if self.children:
-            children = map(str, self.children)
-            children = "\n".join(children)
+            children = "\n".join(map(str, self.children))
             children = children.strip()
             children = f"\n{children}\n"
             children = indent(children, "    ")
@@ -133,15 +135,15 @@ class Data(WithChildrenMixin):
 class MappedData(WithChildrenMixin):
     """Data structure used to return results from the `map_data` function"""
 
-    def __init__(self, value):
+    def __init__(self, value: Any):
         self.value = value
         super().__init__()
 
 
 # %% ../nbs/00_core.ipynb 35
-def map_data(obj: Data, process: Callable, level=0) -> MappedData:
+def map_data(obj: Data, process: Callable, level: int | None = 0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
-    child_results = [map_data(c, process, level=level + 1) for c in obj.children]
+    child_results = [map_data(c, process, level=(level or 0) + 1) for c in obj.children]
     value = process(obj, level)
     data = MappedData(value)
     for c in child_results:

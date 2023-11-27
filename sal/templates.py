@@ -19,7 +19,7 @@ from pathlib import Path
 import abc
 
 # %% ../nbs/99_templates.ipynb 4
-def _get_env():
+def _get_env() -> Environment:
     return Environment(loader=BaseLoader(), undefined=StrictUndefined)
 
 
@@ -43,7 +43,7 @@ def render(
 
 # %% ../nbs/99_templates.ipynb 10
 class JinjaTemplateRenderer:
-    def render(self, template=None, **kwargs) -> str:
+    def render(self, template: str | None = None, **kwargs: Any) -> str:
         if template is None:
             raise RuntimeError("Missing template")
         return render(template, **kwargs)
@@ -58,7 +58,7 @@ class TemplateLoader(abc.ABC):
 
 
 class MissingTemplate(Exception):
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(f"The template '{name}' is missing")
         self.name = name
 
@@ -69,17 +69,19 @@ class InMemoryTemplateLoader(TemplateLoader):
     Will keep a list of templates names + templates content
     """
 
-    def __init__(self, *args, templates=None, **kwargs):
+    def __init__(
+        self, *args: Any, templates: dict[str, str] | None = None, **kwargs: Any
+    ) -> None:
         super().__init__(*args, **kwargs)
-        self.templates = templates
+        self.templates: dict[str, str] = templates or {}
 
-    def get_template(self, name: str):
+    def get_template(self, name: str) -> str:
         if name in self.templates.keys():
             return self.templates[name]
         raise MissingTemplate(name)
 
     @classmethod
-    def from_directory(cls, directory):
+    def from_directory(cls, directory: str) -> "InMemoryTemplateLoader":
         path = Path(directory)
         glob = path.glob("*.jinja2")
 
@@ -101,9 +103,9 @@ class Renderer:
     def __init__(
         self,
         *,
-        renderer: JinjaTemplateRenderer = None,
-        repository: TemplateLoader = None,
-        filters=None,
+        renderer: JinjaTemplateRenderer | None = None,
+        repository: TemplateLoader | None = None,
+        filters: dict | None = None,
     ):
         self.renderer = renderer
         self.repository = repository
