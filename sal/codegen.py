@@ -18,7 +18,7 @@ from sal.templates import (
 
 # %% ../nbs/02_codegen.ipynb 11
 class SalBasic:
-    def __init__(self, renderer: Renderer = None):
+    def __init__(self, renderer: Renderer):
         self.renderer = renderer
 
     def pre_process_data(self, data: Data) -> Data:
