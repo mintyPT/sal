@@ -65,7 +65,7 @@ class FrontMatterMixin(TemplateLoader):
             ret: str = self.frontmatter_handler.get_content(template)
             return ret
 
-        ret2: str = self.frontmatter_handler.get_raw_frontmatter(template)  # type: ignore[safe-super]
+        ret2: str = self.frontmatter_handler.get_raw_frontmatter(template)
         return ret2
 
 
@@ -85,7 +85,7 @@ class Sal(SalBasic):
                 continue
 
             # load template
-            template = self.renderer.repository.get_template(d.name, frontmatter=True)
+            template = self.renderer.repository.get_template(d.name, frontmatter=True)  # type: ignore[call-arg]
             # handle front matter
             new_attributes = self.get_frontmatter_attributes_for_data(template, d)
 
