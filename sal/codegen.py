@@ -65,7 +65,7 @@ class FrontMatterMixin(TemplateLoader):
             ret: str = self.frontmatter_handler.get_content(template)
             return ret
 
-        ret2: str = self.frontmatter_handler.get_raw_frontmatter(template)  # type: ignore[safe-super]
+        ret2: str = self.frontmatter_handler.get_raw_frontmatter(template) 
         return ret2
 
 
