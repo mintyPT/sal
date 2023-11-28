@@ -29,7 +29,7 @@ class WithChildrenMixin:
         """
         Add a child element to the children list and set its parent to self.
         """
-        self.children.append(child) # type: ignore[attr-defined]
+        self.children.append(child)  # type: ignore[attr-defined]
         child.set_parent(self)
         return child
 
@@ -138,7 +138,7 @@ class MappedData(WithChildrenMixin):
         super().__init__()
 
 # %% ../nbs/00_core.ipynb 35
-def map_data(obj: Data, process: Callable, level: int|None=0) -> MappedData:
+def map_data(obj: Data, process: Callable, level: int | None = 0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
     child_results = [map_data(c, process, level=(level or 0) + 1) for c in obj.children]
     value = process(obj, level)

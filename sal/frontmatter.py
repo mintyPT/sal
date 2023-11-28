@@ -11,12 +11,12 @@ from typing import Any
 
 # %% ../nbs/99_frontmatter.ipynb 5
 class FrontMatter:
-    def __init__(self, handler: YAMLHandler|None=None): # type: ignore[no-any-unimported]
-        if handler is None:
-            handler = YAMLHandler()
-        self.handler = handler
+    def __init__(self, h: YAMLHandler | None = None):  # type: ignore[no-any-unimported]
+        if h is None:
+            h = YAMLHandler()
+        self.handler = h
 
-    def split(self, raw_content: str, *, encoding: str="utf-8") -> Any:
+    def split(self, raw_content: str, *, encoding: str = "utf-8") -> Any:
         raw_content = u(raw_content, encoding).strip()
 
         try:
@@ -26,7 +26,7 @@ class FrontMatter:
 
         return fm, content
 
-    def parse(self, raw_frontmatter: Any, *, metadata: Any=None) -> Any:
+    def parse(self, raw_frontmatter: Any, *, metadata: Any = None) -> Any:
         if metadata is None:
             metadata = {}
 
