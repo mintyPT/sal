@@ -77,4 +77,5 @@ d = { 'settings': { 'branch': 'main',
                                'sal.templates.TemplateLoader.get_template': ( 'templates.html#templateloader.get_template',
                                                                               'sal/templates.py'),
                                'sal.templates._get_env': ('templates.html#_get_env', 'sal/templates.py'),
-                               'sal.templates.render': ('templates.html#render', 'sal/templates.py')}}}
+                               'sal.templates.render': ('templates.html#render', 'sal/templates.py')},
+            'sal.utils': {'sal.utils.files': ('utils.html#files', 'sal/utils.py')}}}

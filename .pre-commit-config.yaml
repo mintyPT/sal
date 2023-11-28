@@ -7,13 +7,22 @@ repos:
   hooks:
     - id: poetry-check
     - id: poetry-lock
-- repo: https://github.com/fastai/nbdev
-  rev: 2.3.13
-  hooks:
-  - id: nbdev_clean
-  - id: nbdev_export
 - repo: local
   hooks:
+    - id: nbdev_clean
+      name: nbdev_clean
+      entry: nbdev_clean
+      description: "Clean metadata from notebooks to avoid merge conflicts"
+      language: python
+      always_run: true
+      pass_filenames: false
+    - id: nbdev_export
+      language: python
+      always_run: true
+      pass_filenames: false
+      name: nbdev_export
+      entry: nbdev_export --procs black_format scrub_magics
+      description: "Export notebooks to modules and build modidx"
     - id: mypy
       name: mypy
       entry: mypy
@@ -25,8 +34,8 @@ repos:
       language: system
       types: [python]
       exclude: ^(sal\/_modidx\.py)$
-    - id: black
-      name: black
-      entry: black
-      language: system
-      types: [python]
+    # - id: black
+    #   name: black
+    #   entry: black
+    #   language: system
+    #   types: [python] 
