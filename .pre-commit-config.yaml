@@ -11,8 +11,15 @@ repos:
   hooks:
     - id: nbdev_clean
       name: nbdev_clean
-      entry: nbdev_clean
+      entry: nbdev_clean --clear_all
       description: "Clean metadata from notebooks to avoid merge conflicts"
+      language: python
+      always_run: true
+      pass_filenames: false
+    - id: nbdev_test
+      name: nbdev_test
+      entry: nbdev_test
+      description: "Run tests in notebooks"
       language: python
       always_run: true
       pass_filenames: false
