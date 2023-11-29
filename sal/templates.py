@@ -44,6 +44,12 @@ class TemplateRenderer:
         return render_to_remove(template, **kwargs)
 
 # %% ../nbs/99_templates.ipynb 12
+class MissingTemplateException(Exception):
+    def __init__(self, name: str):
+        super().__init__(f"The template '{name}' is missing")
+        self.name = name
+
+
 class TemplateLoader(abc.ABC):
     def __init__(self):
         self.frontmatter_handler = FrontMatter()
@@ -71,13 +77,6 @@ class TemplateLoader(abc.ABC):
         Use: raise MissingTemplateException(name)
         """
         raise NotImplementedError
-
-
-# Rename this
-class MissingTemplateException(Exception):
-    def __init__(self, name: str):
-        super().__init__(f"The template '{name}' is missing")
-        self.name = name
 
 # %% ../nbs/99_templates.ipynb 13
 class InMemoryTemplateLoader(TemplateLoader):
