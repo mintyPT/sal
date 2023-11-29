@@ -30,11 +30,12 @@ repos:
       name: nbdev_export
       entry: nbdev_export --procs black_format scrub_magics
       description: "Export notebooks to modules and build modidx"
-    - id: mypy
+    - id: mypy-sal
       name: mypy
-      entry: mypy
+      entry: mypy -m sal
       language: system
       types: [python]
+      pass_filenames: false
     - id: ruff
       name: ruff
       entry: ruff
