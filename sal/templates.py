@@ -91,7 +91,7 @@ class FrontMatterInMemoryTemplateLoader(InMemoryTemplateLoader):
         super().__init__(*args, **kwargs)
         self.frontmatter_handler = FrontMatter()
 
-    def get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
+    def _get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
         template = super().get_template(name)  # type: ignore[safe-super]
 
         if not frontmatter:
@@ -100,6 +100,12 @@ class FrontMatterInMemoryTemplateLoader(InMemoryTemplateLoader):
 
         ret2: str = self.frontmatter_handler.get_raw_frontmatter(template)
         return ret2
+
+    def get_template(self, name: str) -> str:
+        return self._get_template(name, frontmatter=False)
+
+    def get_raw_frontmatter(self, name: str) -> str:
+        return self._get_template(name, frontmatter=True)
 
 # %% ../nbs/99_templates.ipynb 16
 # TODO remove "any" typings
@@ -139,3 +145,13 @@ class Renderer:
 
     def get_template(self, *args, **kwargs) -> Any:
         return self.repository.get_template(*args, **kwargs)
+
+    def get_metadata_for_template(self, path: str, data: Data) -> dict:
+        # load template
+        # TODO clean this up
+        if hasattr(self.repository, "get_raw_frontmatter"):
+            template = self.repository.get_raw_frontmatter(path)  # type: ignore[call-arg]
+            rendered = self.render(data, template)
+            parsed: dict = self.repository.frontmatter_handler.parse(rendered)  # type: ignore[attr-defined]
+            return parsed
+        return dict()
