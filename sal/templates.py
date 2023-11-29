@@ -144,10 +144,6 @@ class Renderer:
         return self.repository.get_template(*args, **kwargs)
 
     def get_metadata_for_template(self, path: str, data: Data) -> dict:
-        # load template
-        # TODO clean this up
-        # if not hasattr(self.repository, "get_raw_frontmatter"):
-        #    return dict()
         template = self.repository.get_raw_frontmatter(path)  # type: ignore[call-arg]
         rendered = self.render(data, template)
         return self.repository.frontmatter_handler.parse(
