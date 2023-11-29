@@ -71,13 +71,13 @@ class InMemoryTemplateLoader(TemplateLoader):
         super().__init__(*args, **kwargs)
         self.templates: dict[str, str] = templates or {}
 
-    def get_template_from_dict(self, name: str) -> str:
+    def get_template_for_name(self, name: str) -> str:
         if name in self.templates.keys():
             return self.templates[name]
         raise MissingTemplate(name)
 
     def _get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
-        template = self.get_template_from_dict(name)  # type: ignore[safe-super]
+        template = self.get_template_for_name(name)  # type: ignore[safe-super]
         if not frontmatter:
             ret: str = self.frontmatter_handler.get_content(template)
             return ret
@@ -106,8 +106,6 @@ class InMemoryTemplateLoader(TemplateLoader):
 
 # %% ../nbs/99_templates.ipynb 16
 # TODO remove "any" typings
-
-
 class Renderer:
     # if no template is passed in, we use the DEFAULT_TEMPLATE
     DEFAULT_TEMPLATE = "{% for child in children %}{{ child | render }}{% endfor %}"
