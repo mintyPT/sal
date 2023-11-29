@@ -68,13 +68,13 @@ class TemplateLoader(abc.ABC):
     @abc.abstractmethod
     def get_template_for_name(self, name: str) -> str:
         """TODO
-        Use: raise MissingTemplate(name)
+        Use: raise MissingTemplateException(name)
         """
         raise NotImplementedError
 
 
 # Rename this
-class MissingTemplate(Exception):
+class MissingTemplateException(Exception):
     def __init__(self, name: str):
         super().__init__(f"The template '{name}' is missing")
         self.name = name
@@ -94,7 +94,7 @@ class InMemoryTemplateLoader(TemplateLoader):
     def get_template_for_name(self, name: str) -> str:
         if name in self.templates.keys():
             return self.templates[name]
-        raise MissingTemplate(name)
+        raise MissingTemplateException(name)
 
     @classmethod
     def from_directory(cls, directory: str) -> "InMemoryTemplateLoader":

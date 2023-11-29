@@ -9,7 +9,7 @@ from pathlib import Path
 from .core import Data
 from .utils import is_notebook
 from .loaders import xml_file_to_data
-from .templates import MissingTemplate
+from .templates import MissingTemplateException
 
 from sal.templates import (
     InMemoryTemplateLoader,
@@ -27,7 +27,7 @@ def _render(file: str, directory: str) -> str | Any:
         sal = Sal(renderer)
         struct: Data = xml_file_to_data(file)
         return sal.process(struct)
-    except MissingTemplate as e:
+    except MissingTemplateException as e:
         path = Path(directory) / f"{e.name}.jinja2"
         path.write_text(Renderer.DEFAULT_TEMPLATE)
         return render(file, directory)
