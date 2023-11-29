@@ -48,12 +48,32 @@ class TemplateLoader(abc.ABC):
     def __init__(self):
         self.frontmatter_handler = FrontMatter()
 
-    @abc.abstractmethod
+    # @abc.abstractmethod
+    # def get_template(self, name: str) -> str:
+    #     """Separate method to allow an override to the template, before returning"""
+    #     raise NotImplementedError
+
+    def _get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
+        template = self.get_template_for_name(name)  # type: ignore[safe-super]
+        if not frontmatter:
+            return self.frontmatter_handler.get_content(template)
+        return self.frontmatter_handler.get_raw_frontmatter(template)
+
     def get_template(self, name: str) -> str:
-        """Separate method to allow an override to the template, before returning"""
+        return self._get_template(name, frontmatter=False)
+
+    def get_raw_frontmatter(self, name: str) -> str:
+        return self._get_template(name, frontmatter=True)
+
+    @abc.abstractmethod
+    def get_template_for_name(self, name: str) -> str:
+        """TODO
+        Use: raise MissingTemplate(name)
+        """
         raise NotImplementedError
 
 
+# Rename this
 class MissingTemplate(Exception):
     def __init__(self, name: str):
         super().__init__(f"The template '{name}' is missing")
@@ -75,20 +95,6 @@ class InMemoryTemplateLoader(TemplateLoader):
         if name in self.templates.keys():
             return self.templates[name]
         raise MissingTemplate(name)
-
-    def _get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
-        template = self.get_template_for_name(name)  # type: ignore[safe-super]
-        if not frontmatter:
-            ret: str = self.frontmatter_handler.get_content(template)
-            return ret
-        ret2: str = self.frontmatter_handler.get_raw_frontmatter(template)
-        return ret2
-
-    def get_template(self, name: str) -> str:
-        return self._get_template(name, frontmatter=False)
-
-    def get_raw_frontmatter(self, name: str) -> str:
-        return self._get_template(name, frontmatter=True)
 
     @classmethod
     def from_directory(cls, directory: str) -> "InMemoryTemplateLoader":
