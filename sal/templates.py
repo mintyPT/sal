@@ -60,14 +60,14 @@ class TemplateLoader:
                 loaders.append(FileSystemLoader(folder))
         self.loader = ChoiceLoader(loaders)
 
-    def get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
+    def get_source(self, name: str, frontmatter: Optional[bool] = False) -> str:
         template, _, _ = self.loader.get_source(None, name)  # type: ignore[safe-super]
         if not frontmatter:
             return self.frontmatter_handler.get_content(template)
         return self.frontmatter_handler.get_raw_frontmatter(template)
 
     def get_raw_frontmatter(self, name: str) -> str:
-        return self.get_template(name, frontmatter=True)
+        return self.get_source(name, frontmatter=True)
 
     @classmethod
     def from_directory(cls, directory: str) -> "TemplateLoader":
@@ -102,7 +102,7 @@ class Renderer:
 
     def render(self, data: Data, template: Optional[str] = None) -> str:
         if template is None:
-            template = self.repository.get_template(data.name)
+            template = self.repository.get_source(data.name)
 
         ret = self.renderer.render(
             template=template,
@@ -117,8 +117,8 @@ class Renderer:
     def process(self, data: Data) -> str:
         return self.render(data)
 
-    def get_template(self, *args, **kwargs) -> Any:
-        return self.repository.get_template(*args, **kwargs)
+    def get_source(self, *args, **kwargs) -> Any:
+        return self.repository.get_source(*args, **kwargs)
 
     def get_metadata_for_template(self, path: str, data: Data) -> dict:
         template = self.repository.get_raw_frontmatter(path)  # type: ignore[call-arg]
