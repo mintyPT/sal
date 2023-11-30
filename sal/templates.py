@@ -64,9 +64,9 @@ class TemplateLoader:
         template, _, _ = self.loader.get_source(None, name)  # type: ignore[safe-super]
         if not frontmatter:
             return self.frontmatter_handler.get_content(template)
-        return self.frontmatter_handler.get_raw_frontmatter(template)
+        return self.frontmatter_handler.get_frontmatter_source(template)
 
-    def get_raw_frontmatter(self, name: str) -> str:
+    def get_frontmatter_source(self, name: str) -> str:
         return self.get_source(name, frontmatter=True)
 
     @classmethod
@@ -121,8 +121,12 @@ class Renderer:
         return self.repository.get_source(*args, **kwargs)
 
     def get_metadata_for_template(self, path: str, data: Data) -> dict:
-        template = self.repository.get_raw_frontmatter(path)  # type: ignore[call-arg]
+        template = self.repository.get_frontmatter_source(
+            path
+        )  # type: ignore[call-arg]
+
         rendered = self.render(data, template)
+
         return self.repository.frontmatter_handler.parse(
             rendered
         )  # type: ignore[attr-defined]

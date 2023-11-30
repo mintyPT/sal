@@ -60,7 +60,7 @@ class FrontMatter:
         ret: str = content.strip()
         return ret
 
-    def get_raw_frontmatter(self, template: str) -> str:
+    def get_frontmatter_source(self, template: str) -> str:
         resp = self.split(template)
         frontmatter, content = resp
         if frontmatter:
