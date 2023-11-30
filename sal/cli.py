@@ -5,22 +5,19 @@ __all__ = ['main', 'render']
 
 # %% ../nbs/03_cli.ipynb 3
 import click
+
 from pathlib import Path
+from typing import Any
+
 from .core import Data
 from .utils import is_notebook
 from .loaders import xml_file_to_data
 from .templates import MissingTemplateException
-
-from sal.templates import (
-    TemplateLoader,
-    TemplateRenderer,
-)
 from .codegen import Sal, Renderer
-
-from typing import Any
+from .templates import TemplateLoader, TemplateRenderer
 
 # %% ../nbs/03_cli.ipynb 6
-def _render(file: str, directory: str) -> str | Any:
+def _render(file: str, directory: str, exit=False) -> str | Any:
     try:
         repository = TemplateLoader.from_directory(directory)
         renderer = Renderer(repository=repository, renderer=TemplateRenderer())
@@ -28,9 +25,15 @@ def _render(file: str, directory: str) -> str | Any:
         struct: Data = xml_file_to_data(file)
         return sal.process(struct)
     except MissingTemplateException as e:
+
+        if exit:
+            raise RuntimeError(
+                f"Exiting after not finding the template twice: {e.name}"
+            )
+
         path = Path(directory) / f"{e.name}.jinja2"
         path.write_text(Renderer.DEFAULT_TEMPLATE)
-        return render(file, directory)
+        return _render(file, directory, exit=True)
 
 # %% ../nbs/03_cli.ipynb 9
 @click.group()
