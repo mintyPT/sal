@@ -12,7 +12,7 @@ from .loaders import xml_file_to_data
 from .templates import MissingTemplateException
 
 from sal.templates import (
-    InMemoryTemplateLoader,
+    TemplateLoader,
     TemplateRenderer,
 )
 from .codegen import Sal, Renderer
@@ -22,7 +22,7 @@ from typing import Any
 # %% ../nbs/03_cli.ipynb 6
 def _render(file: str, directory: str) -> str | Any:
     try:
-        repository = InMemoryTemplateLoader.from_directory(directory)
+        repository = TemplateLoader.from_directory(directory)
         renderer = Renderer(repository=repository, renderer=TemplateRenderer())
         sal = Sal(renderer)
         struct: Data = xml_file_to_data(file)

@@ -4,20 +4,26 @@
 __all__ = []
 
 # %% ../nbs/99_templates.ipynb 2
+import abc
+
+from pathlib import Path
 from .core import Data
 from typing import Any, Optional
-from jinja2 import Environment, BaseLoader, Template, StrictUndefined
-from pathlib import Path
 from .frontmatter import FrontMatter
-
-import abc
+from jinja2 import (
+    Environment,
+    BaseLoader,
+    Template,
+    StrictUndefined,
+    TemplateNotFound,
+    ChoiceLoader,
+    DictLoader,
+    FileSystemLoader,
+)
 
 # %% ../nbs/99_templates.ipynb 4
 def _get_env() -> Environment:
     return Environment(loader=BaseLoader(), undefined=StrictUndefined)
-
-
-# TODO start using a proper jinja template loader
 
 # %% ../nbs/99_templates.ipynb 6
 def render_to_remove(
@@ -44,23 +50,20 @@ class TemplateRenderer:
         return render_to_remove(template, **kwargs)
 
 # %% ../nbs/99_templates.ipynb 12
-class MissingTemplateException(Exception):
-    def __init__(self, name: str):
-        super().__init__(f"The template '{name}' is missing")
-        self.name = name
+MissingTemplateException = TemplateNotFound
 
 
 class TemplateLoader(abc.ABC):
-    def __init__(self):
+    def __init__(self, templates=None, folders: list[str] = None):
         self.frontmatter_handler = FrontMatter()
-
-    # @abc.abstractmethod
-    # def get_template(self, name: str) -> str:
-    #     """Separate method to allow an override to the template, before returning"""
-    #     raise NotImplementedError
+        loaders = [DictLoader(templates or {})]
+        if folders:
+            for folder in folders:
+                loaders.append(FileSystemLoader(folder))
+        self.loader = ChoiceLoader(loaders)
 
     def _get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
-        template = self.get_template_for_name(name)  # type: ignore[safe-super]
+        template, _, _ = self.loader.get_source(None, name)  # type: ignore[safe-super]
         if not frontmatter:
             return self.frontmatter_handler.get_content(template)
         return self.frontmatter_handler.get_raw_frontmatter(template)
@@ -71,32 +74,8 @@ class TemplateLoader(abc.ABC):
     def get_raw_frontmatter(self, name: str) -> str:
         return self._get_template(name, frontmatter=True)
 
-    @abc.abstractmethod
-    def get_template_for_name(self, name: str) -> str:
-        """TODO
-        Use: raise MissingTemplateException(name)
-        """
-        raise NotImplementedError
-
-# %% ../nbs/99_templates.ipynb 13
-class InMemoryTemplateLoader(TemplateLoader):
-    """
-    Will keep a list of templates names + templates content
-    """
-
-    def __init__(
-        self, *args: Any, templates: dict[str, str] | None = None, **kwargs: Any
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self.templates: dict[str, str] = templates or {}
-
-    def get_template_for_name(self, name: str) -> str:
-        if name in self.templates.keys():
-            return self.templates[name]
-        raise MissingTemplateException(name)
-
     @classmethod
-    def from_directory(cls, directory: str) -> "InMemoryTemplateLoader":
+    def from_directory(cls, directory: str) -> "TemplateLoader":
         path = Path(directory)
         glob = path.glob("*.jinja2")
 
@@ -109,7 +88,7 @@ class InMemoryTemplateLoader(TemplateLoader):
 
         return cls(templates=templates_raw)
 
-# %% ../nbs/99_templates.ipynb 16
+# %% ../nbs/99_templates.ipynb 15
 # TODO remove "any" typings
 class Renderer:
     # if no template is passed in, we use the DEFAULT_TEMPLATE
