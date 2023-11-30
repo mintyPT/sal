@@ -4,8 +4,6 @@
 __all__ = []
 
 # %% ../nbs/99_templates.ipynb 2
-import abc
-
 from pathlib import Path
 from .core import Data
 from typing import Any, Optional
@@ -53,7 +51,7 @@ class TemplateRenderer:
 MissingTemplateException = TemplateNotFound
 
 
-class TemplateLoader(abc.ABC):
+class TemplateLoader:
     def __init__(self, templates=None, folders: list[str] = None):
         self.frontmatter_handler = FrontMatter()
         loaders = [DictLoader(templates or {})]
@@ -62,17 +60,14 @@ class TemplateLoader(abc.ABC):
                 loaders.append(FileSystemLoader(folder))
         self.loader = ChoiceLoader(loaders)
 
-    def _get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
+    def get_template(self, name: str, frontmatter: Optional[bool] = False) -> str:
         template, _, _ = self.loader.get_source(None, name)  # type: ignore[safe-super]
         if not frontmatter:
             return self.frontmatter_handler.get_content(template)
         return self.frontmatter_handler.get_raw_frontmatter(template)
 
-    def get_template(self, name: str) -> str:
-        return self._get_template(name, frontmatter=False)
-
     def get_raw_frontmatter(self, name: str) -> str:
-        return self._get_template(name, frontmatter=True)
+        return self.get_template(name, frontmatter=True)
 
     @classmethod
     def from_directory(cls, directory: str) -> "TemplateLoader":
