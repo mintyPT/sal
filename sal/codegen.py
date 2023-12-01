@@ -44,15 +44,14 @@ class ToFileAction(SalAction):
 
 
 # TODO can we remove this?
-class ToStringAction(SalAction):
-    name = "to-string"
+# class ToStringAction(SalAction):
+#    name = "to-string"
+#
+#    def process_data(self, sal: "Sal", data: Data) -> str:
+#        rendered = sal.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
+#        return rendered
 
-    def process_data(self, sal: "Sal", data: Data) -> str:
-        rendered = sal.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
-        return rendered
 
-
-# TODO can we remove this?
 class WrapperAction(SalAction):
     name = "wrapper"
 
@@ -69,7 +68,7 @@ class Config(BaseModel):
 class Sal:
     def __init__(self, renderer: Renderer):
         self.renderer = renderer
-        self.actions = [ToFileAction(), ToStringAction(), WrapperAction()]
+        self.actions = [ToFileAction(), WrapperAction()]  #  ToStringAction()
         self.action_results = []
 
     def pre_process_data(self, data: Data) -> Data:
