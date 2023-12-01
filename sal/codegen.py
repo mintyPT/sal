@@ -43,15 +43,6 @@ class ToFileAction(SalAction):
         return rendered
 
 
-# TODO can we remove this?
-# class ToStringAction(SalAction):
-#    name = "to-string"
-#
-#    def process_data(self, sal: "Sal", data: Data) -> str:
-#        rendered = sal.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
-#        return rendered
-
-
 class WrapperAction(SalAction):
     name = "wrapper"
 
