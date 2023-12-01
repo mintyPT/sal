@@ -13,15 +13,17 @@ from .core import Data
 from .utils import is_notebook
 from .loaders import xml_file_to_data
 from .templates import MissingTemplateException
-from .codegen import Sal, Renderer
-from .templates import TemplateLoader, TemplateRenderer
+from .codegen import Sal, Renderer, Config
 
 # %% ../nbs/03_cli.ipynb 6
 def _render(file: str, directory: str, exit=False) -> str | Any:
     try:
-        repository = TemplateLoader.from_directory(directory)
-        renderer = Renderer(repository=repository, renderer=TemplateRenderer())
-        sal = Sal(renderer)
+        # repository = TemplateLoader.from_directory(directory)
+        # renderer = Renderer(repository=repository, renderer=TemplateRenderer())
+        # sal = Sal(renderer)
+
+        sal = Sal.from_config(Config(template_directories=[directory]))
+
         struct: Data = xml_file_to_data(file)
         return sal.process(struct)
     except MissingTemplateException as e:
