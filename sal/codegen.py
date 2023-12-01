@@ -32,12 +32,18 @@ class ToFileAction(SalAction):
 
     def process_data(self, sal: "Sal", data: Data) -> str:
         rendered = sal.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
+
+        if "to" not in data.attrs:
+            raise RuntimeError(
+                "To save to file you need to define the 'to' attribute with a filepath"
+            )
         to = data.attrs["to"]
         with open(to, "w") as h:
             h.write(rendered)
         return rendered
 
 
+# TODO can we remove this?
 class ToStringAction(SalAction):
     name = "to-string"
 
@@ -46,6 +52,7 @@ class ToStringAction(SalAction):
         return rendered
 
 
+# TODO can we remove this?
 class WrapperAction(SalAction):
     name = "wrapper"
 
@@ -54,8 +61,6 @@ class WrapperAction(SalAction):
 
 # %% ../nbs/02_codegen.ipynb 12
 # TODO add support to inject more action into this
-
-
 class Config(BaseModel):
     template_directories: list[str]
     filters: dict[str, Callable] = {}
@@ -65,6 +70,7 @@ class Sal:
     def __init__(self, renderer: Renderer):
         self.renderer = renderer
         self.actions = [ToFileAction(), ToStringAction(), WrapperAction()]
+        self.action_results = []
 
     def pre_process_data(self, data: Data) -> Data:
         for d, _ in data:
@@ -82,7 +88,9 @@ class Sal:
     def process_data(self, data: Data) -> str | Any:
         for action in self.actions:
             if data.name == action.name:
-                return action.process_data(self, data)
+                ret = action.process_data(self, data)
+                self.action_results.append(ret)
+                return ret
         return self.renderer.process(data)
 
     def process(self, data: Data) -> str | Any:
@@ -96,7 +104,7 @@ class Sal:
     # TODO support multiple template directories
     @classmethod
     def from_config(cls, config: Config):
-        repository = TemplateLoader.from_directory(config.template_directories[0])
+        repository = TemplateLoader.from_directories(config.template_directories)
         template_renderer = Renderer(
             repository=repository, renderer=TemplateRenderer(), filters=config.filters
         )

@@ -4,7 +4,6 @@
 __all__ = ['render_to_remove']
 
 # %% ../nbs/99_templates.ipynb 2
-from pathlib import Path
 from sal.core import Data
 from typing import Any, Optional
 from sal.frontmatter import FrontMatter
@@ -72,20 +71,8 @@ class TemplateLoader:
         return self.get_source(name, frontmatter=True)
 
     @classmethod
-    def from_directory(cls, directory: str) -> "TemplateLoader":
-        return cls(folders=[directory])
-
-        path = Path(directory)
-        glob = path.glob("*.jinja2")
-
-        templates_raw = {}
-        for p in glob:
-            model_name = p.name.replace(".jinja2", "")
-            with open(p, "r") as h:
-                tpl = h.read()
-            templates_raw[model_name] = tpl
-
-        return cls(templates=templates_raw)
+    def from_directories(cls, directories: list[str]) -> "TemplateLoader":
+        return cls(folders=directories)
 
 # %% ../nbs/99_templates.ipynb 16
 # TODO remove "any" typings

@@ -16,26 +16,20 @@ from .templates import MissingTemplateException
 from .codegen import Sal, Renderer, Config
 
 # %% ../nbs/03_cli.ipynb 6
-def _render(file: str, directory: str, exit=False) -> str | Any:
+# TODO support filters from config file
+def _render(file: str, directories: list[str], exit=False) -> str | Any:
     try:
-        # repository = TemplateLoader.from_directory(directory)
-        # renderer = Renderer(repository=repository, renderer=TemplateRenderer())
-        # sal = Sal(renderer)
-
-        sal = Sal.from_config(Config(template_directories=[directory]))
-
+        sal = Sal.from_config(Config(template_directories=directories))
         struct: Data = xml_file_to_data(file)
         return sal.process(struct)
     except MissingTemplateException as e:
-
         if exit:
             raise RuntimeError(
                 f"Exiting after not finding the template twice: {e.name}"
             )
-
-        path = Path(directory) / f"{e.name}.jinja2"
+        path = Path(directories[0]) / f"{e.name}.jinja2"
         path.write_text(Renderer.DEFAULT_TEMPLATE)
-        return _render(file, directory, exit=True)
+        return _render(file, directories, exit=True)
 
 # %% ../nbs/03_cli.ipynb 9
 @click.group()
@@ -55,7 +49,7 @@ def main() -> None:
 def render(filename: str, folder: str) -> None:
     click.echo(f"⚠️ {filename=}")
     click.echo(f"⚠️ {folder=}")
-    _render(filename, str(Path(folder) / "templates"))
+    _render(filename, [str(Path(folder) / "templates")])
 
 # %% ../nbs/03_cli.ipynb 12
 if __name__ == "__main__" and not is_notebook():
