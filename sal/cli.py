@@ -40,6 +40,10 @@ def render(filename: str, folder: str) -> None:
     click.echo(f"⚠️ {folder=}")
     _render(filename, [str(Path(folder) / "templates")])
 
+
+# TODO snapshot
+# TODO check.snapshot
+
 # %% ../nbs/03_cli.ipynb 11
 if __name__ == "__main__" and not is_notebook():
     main()

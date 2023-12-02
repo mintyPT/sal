@@ -103,6 +103,15 @@ class Sal:
         struct: Data = xml_file_to_data(file)
         return self.process(struct)
 
+    def process_action_results(self) -> None:
+        for action_result in self.action_results:
+            if isinstance(action_result, WriteFileResult):
+                print("writing to {result.to}: '{content}'")
+                with open(action_result.to, "w") as h:
+                    h.write(action_result.content)
+            else:
+                raise RuntimeError(f"Unsupported action {action_result}")
+
     def process(self, data: Data, exit=False) -> str | Any:
 
         data = self.pre_process_data(data)
@@ -126,13 +135,7 @@ class Sal:
                 "This should not happen."
             )
 
-        for action_result in self.action_results:
-            if isinstance(action_result, WriteFileResult):
-                print("writing to {result.to}: '{content}'")
-                with open(action_result.to, "w") as h:
-                    h.write(action_result.content)
-            else:
-                raise RuntimeError(f"Unsupported action {result}")
+        self.process_action_results()
 
         return result
 
