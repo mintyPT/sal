@@ -79,6 +79,10 @@ class Sal:
         self.actions = [ToFileAction(), GroupAction()]  #  ToStringAction()
         self.action_results = []
 
+    @property
+    def action_names(self):
+        return [action.name for action in self.actions]
+
     def pre_process_data(self, data: Data) -> Data:
         for d, _ in data:
             if d.name in self.action_names:
@@ -113,6 +117,9 @@ class Sal:
                 raise RuntimeError(f"Unsupported action {action_result}")
 
     def process(self, data: Data, exit=False) -> str | Any:
+        return self._process(data, exit=exit)
+
+    def _process(self, data: Data, exit=False) -> str | Any:
 
         data = self.pre_process_data(data)
 
@@ -120,35 +127,33 @@ class Sal:
             result = self.process_data(data)
         except MissingTemplateException as e:
             path = Path(self.config.template_directories[0]) / f"{e.name}.jinja2"
-
-            print(
+            raise RuntimeError(
                 dedent(
-                    f"""The template was not found. We suggest this default template
+                    f"""
+                The template `{e.name}` was not found. Here's a default template to 
+                get you started:
+                
                 {self.renderer.DEFAULT_TEMPLATE}
+
                 ---
                 at: {path}
             """
-                )
-            )
-            raise RuntimeError(
-                f"Exiting after not finding the template: {e.name}. "
-                "This should not happen."
+                ).strip()
             )
 
         self.process_action_results()
 
         return result
 
-    @property
-    def action_names(self):
-        return [action.name for action in self.actions]
-
     # TODO support multiple template directories
     @classmethod
-    def from_config(cls, *args, **kwargs):
-        # TODO maybe type this instead of using args / kwargs
-        config = Config(*args, **kwargs)
+    def from_config(
+        cls, template_directories: list[str], filters: dict[str, Callable] = {}
+    ):
+        config = Config(template_directories=template_directories, filters=filters)
+
         repository = TemplateLoader.from_directories(config.template_directories)
+
         template_renderer = Renderer(
             repository=repository, renderer=TemplateRenderer(), filters=config.filters
         )
