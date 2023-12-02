@@ -8,6 +8,7 @@ import abc
 
 from pydantic import BaseModel
 from typing import Any, Callable
+from dataclasses import dataclass
 
 from .core import Data
 from .templates import Renderer, TemplateLoader, TemplateRenderer
@@ -27,6 +28,12 @@ class SalAction(abc.ABC):
         return f"action:{self.name}"
 
 
+@dataclass
+class WriteFileResult:
+    to: str
+    content: str
+
+
 class ToFileAction(SalAction):
     name = "to-file"
 
@@ -38,16 +45,18 @@ class ToFileAction(SalAction):
                 "To save to file you need to define the 'to' attribute with a filepath"
             )
         to = data.attrs["to"]
-        with open(to, "w") as h:
-            h.write(rendered)
-        return rendered
+
+        # with open(to, "w") as h:
+        #    h.write(rendered)
+
+        return rendered, WriteFileResult(to=to, content=rendered)
 
 
 class WrapperAction(SalAction):
     name = "wrapper"
 
     def process_data(self, sal: "Sal", data: Data) -> str:
-        return [sal.process(d) for d in data.children]
+        return [sal.process(d) for d in data.children], None
 
 # %% ../nbs/02_codegen.ipynb 12
 # TODO add support to inject more action into this
@@ -69,23 +78,33 @@ class Sal:
             # handle front matter
 
             if hasattr(self.renderer, "get_metadata_for_template"):
-                # TODO rename this
                 new_attributes = self.renderer.get_metadata_for_template(d.name, d)
-                # update attributes
                 d.attrs.update(new_attributes)
         return data
 
     def process_data(self, data: Data) -> str | Any:
         for action in self.actions:
             if data.name == action.name:
-                ret = action.process_data(self, data)
-                self.action_results.append(ret)
+                ret, action_result = action.process_data(self, data)
+                if action_result:
+                    self.action_results.append(action_result)
                 return ret
         return self.renderer.process(data)
 
     def process(self, data: Data) -> str | Any:
         data = self.pre_process_data(data)
-        return self.process_data(data)
+
+        result = self.process_data(data)
+
+        for action_result in self.action_results:
+            if isinstance(action_result, WriteFileResult):
+                print("writing to {result.to}: '{content}'")
+                with open(action_result.to, "w") as h:
+                    h.write(action_result.content)
+            else:
+                raise RuntimeError(f"Unsupported action {result}")
+
+        return result
 
     @property
     def action_names(self):
