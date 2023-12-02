@@ -6,12 +6,22 @@ __all__ = ['Config', 'Sal']
 # %% ../nbs/02_codegen.ipynb 2
 import abc
 
+
 from pydantic import BaseModel
 from typing import Any, Callable
 from dataclasses import dataclass
+from pathlib import Path
+from textwrap import dedent
+
 
 from .core import Data
-from .templates import Renderer, TemplateLoader, TemplateRenderer
+from .loaders import xml_file_to_data
+from sal.templates import (
+    Renderer,
+    TemplateLoader,
+    TemplateRenderer,
+    MissingTemplateException,
+)
 
 # %% ../nbs/02_codegen.ipynb 11
 class SalAction(abc.ABC):
@@ -46,14 +56,11 @@ class ToFileAction(SalAction):
             )
         to = data.attrs["to"]
 
-        # with open(to, "w") as h:
-        #    h.write(rendered)
-
         return rendered, WriteFileResult(to=to, content=rendered)
 
 
-class WrapperAction(SalAction):
-    name = "wrapper"
+class GroupAction(SalAction):
+    name = "group"
 
     def process_data(self, sal: "Sal", data: Data) -> str:
         return [sal.process(d) for d in data.children], None
@@ -66,9 +73,10 @@ class Config(BaseModel):
 
 
 class Sal:
-    def __init__(self, renderer: Renderer):
+    def __init__(self, config: Config, renderer: Renderer):
+        self.config = config
         self.renderer = renderer
-        self.actions = [ToFileAction(), WrapperAction()]  #  ToStringAction()
+        self.actions = [ToFileAction(), GroupAction()]  #  ToStringAction()
         self.action_results = []
 
     def pre_process_data(self, data: Data) -> Data:
@@ -91,10 +99,32 @@ class Sal:
                 return ret
         return self.renderer.process(data)
 
-    def process(self, data: Data) -> str | Any:
+    def process_xml_from_filename(self, file: str) -> str | Any:
+        struct: Data = xml_file_to_data(file)
+        return self.process(struct)
+
+    def process(self, data: Data, exit=False) -> str | Any:
+
         data = self.pre_process_data(data)
 
-        result = self.process_data(data)
+        try:
+            result = self.process_data(data)
+        except MissingTemplateException as e:
+            path = Path(self.config.template_directories[0]) / f"{e.name}.jinja2"
+
+            print(
+                dedent(
+                    f"""The template was not found. We suggest this default template
+                {self.renderer.DEFAULT_TEMPLATE}
+                ---
+                at: {path}
+            """
+                )
+            )
+            raise RuntimeError(
+                f"Exiting after not finding the template: {e.name}. "
+                "This should not happen."
+            )
 
         for action_result in self.action_results:
             if isinstance(action_result, WriteFileResult):
@@ -112,9 +142,11 @@ class Sal:
 
     # TODO support multiple template directories
     @classmethod
-    def from_config(cls, config: Config):
+    def from_config(cls, *args, **kwargs):
+        # TODO maybe type this instead of using args / kwargs
+        config = Config(*args, **kwargs)
         repository = TemplateLoader.from_directories(config.template_directories)
         template_renderer = Renderer(
             repository=repository, renderer=TemplateRenderer(), filters=config.filters
         )
-        return cls(template_renderer)
+        return cls(config, template_renderer)

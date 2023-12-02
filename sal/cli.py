@@ -9,27 +9,16 @@ import click
 from pathlib import Path
 from typing import Any
 
-from .core import Data
 from .utils import is_notebook
-from .loaders import xml_file_to_data
-from .templates import MissingTemplateException
-from .codegen import Sal, Renderer, Config
+from .codegen import Sal
 
 # %% ../nbs/03_cli.ipynb 6
 # TODO support filters from config file
-def _render(file: str, directories: list[str], exit=False) -> str | Any:
-    try:
-        sal = Sal.from_config(Config(template_directories=directories))
-        struct: Data = xml_file_to_data(file)
-        return sal.process(struct)
-    except MissingTemplateException as e:
-        if exit:
-            raise RuntimeError(
-                f"Exiting after not finding the template twice: {e.name}"
-            )
-        path = Path(directories[0]) / f"{e.name}.jinja2"
-        path.write_text(Renderer.DEFAULT_TEMPLATE)
-        return _render(file, directories, exit=True)
+
+
+def _render(file: str, directories: list[str]) -> str | Any:
+    sal = Sal.from_config(template_directories=directories)
+    return sal.process_xml_from_filename(file)
 
 # %% ../nbs/03_cli.ipynb 9
 @click.group()
@@ -51,6 +40,6 @@ def render(filename: str, folder: str) -> None:
     click.echo(f"⚠️ {folder=}")
     _render(filename, [str(Path(folder) / "templates")])
 
-# %% ../nbs/03_cli.ipynb 12
+# %% ../nbs/03_cli.ipynb 11
 if __name__ == "__main__" and not is_notebook():
     main()
