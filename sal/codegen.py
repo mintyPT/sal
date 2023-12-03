@@ -6,13 +6,11 @@ __all__ = ['Config', 'Sal']
 # %% ../nbs/02_codegen.ipynb 2
 import abc
 
-
 from pydantic import BaseModel
 from typing import Any, Callable
 from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
-
 
 from .core import Data
 from .loaders import xml_file_to_data
@@ -68,7 +66,7 @@ class GroupAction(SalAction):
 # %% ../nbs/02_codegen.ipynb 12
 # TODO add support to inject more action into this
 class Config(BaseModel):
-    template_directories: list[str]
+    template_directories: list[Path]
     filters: dict[str, Callable] = {}
 
 
@@ -87,44 +85,19 @@ class Sal:
         for d, _ in data:
             if d.name in self.action_names:
                 continue
-            # handle front matter
-
-            if hasattr(self.renderer, "get_metadata_for_template"):
-                new_attributes = self.renderer.get_metadata_for_template(d.name, d)
-                d.attrs.update(new_attributes)
+            new_attributes = self.renderer.get_metadata_for_template(d.name, d)
+            d.attrs.update(new_attributes)
         return data
 
     def process_data(self, data: Data) -> str | Any:
-        for action in self.actions:
-            if data.name == action.name:
-                ret, action_result = action.process_data(self, data)
-                if action_result:
-                    self.action_results.append(action_result)
-                return ret
-        return self.renderer.process(data)
-
-    def process_xml_from_filename(self, file: str) -> str | Any:
-        struct: Data = xml_file_to_data(file)
-        return self.process(struct)
-
-    def process_action_results(self) -> None:
-        for action_result in self.action_results:
-            if isinstance(action_result, WriteFileResult):
-                print("writing to {result.to}: '{content}'")
-                with open(action_result.to, "w") as h:
-                    h.write(action_result.content)
-            else:
-                raise RuntimeError(f"Unsupported action {action_result}")
-
-    def process(self, data: Data, exit=False) -> str | Any:
-        return self._process(data, exit=exit)
-
-    def _process(self, data: Data, exit=False) -> str | Any:
-
-        data = self.pre_process_data(data)
-
         try:
-            result = self.process_data(data)
+            for action in self.actions:
+                if data.name == action.name:
+                    ret, action_result = action.process_data(self, data)
+                    if action_result:
+                        self.action_results.append(action_result)
+                    return ret
+            return self.renderer.process(data)
         except MissingTemplateException as e:
             path = Path(self.config.template_directories[0]) / f"{e.name}.jinja2"
             raise RuntimeError(
@@ -141,8 +114,27 @@ class Sal:
                 ).strip()
             )
 
-        self.process_action_results()
+    def process_xml_from_filename(self, file: str) -> str | Any:
+        struct: Data = xml_file_to_data(file)
+        return self.process(struct)
 
+    def process_action_results(self) -> None:
+        for action_result in self.action_results:
+            if isinstance(action_result, WriteFileResult):
+                print("writing to {result.to}: '{content}'")
+                with open(action_result.to, "w") as h:
+                    h.write(action_result.content)
+            else:
+                raise RuntimeError(f"Unsupported action {action_result}")
+
+    def process(self, data: Data) -> str | Any:
+        return self._process(data)
+
+    # TODO support snapshots
+    def _process(self, data: Data) -> str | Any:
+        data = self.pre_process_data(data)
+        result = self.process_data(data)
+        self.process_action_results()
         return result
 
     # TODO support multiple template directories
