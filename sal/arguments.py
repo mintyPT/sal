@@ -7,19 +7,19 @@ __all__ = ['JsonType', 'parse_arg', 'parse_attrs']
 import json
 from typing import Union
 
-# %% ../nbs/99_arguments.ipynb 4
+# %% ../nbs/99_arguments.ipynb 5
 JsonType = Union[None, int, str, bool, list["JsonType"], dict[str, "JsonType"]]
 
 
 def parse_arg(arg: str) -> JsonType:
+    """Parses a single arg in string format using json."""
     try:
         v: JsonType = json.loads(arg)
         return v
     except json.JSONDecodeError:
         return arg
 
-# %% ../nbs/99_arguments.ipynb 7
-def parse_attrs(attrs: dict) -> dict:
-    for k, y in attrs.items():
-        attrs[k] = parse_arg(y)
-    return attrs
+
+def parse_attrs(attrs: dict[str, str]) -> dict[str, JsonType]:
+    """Parses a dictonary of string into a dictonary of parsed values."""
+    return {k: parse_arg(y) for k, y in attrs.items()}

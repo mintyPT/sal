@@ -31,6 +31,8 @@ def main() -> None:
 # - create : sal folder
 # - create : sal/templates folder
 
+# - snapshots
+
 
 @main.command()
 @click.option("--filename", type=click.Path(exists=True), default="./sal.xml")

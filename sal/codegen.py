@@ -132,7 +132,6 @@ class Sal:
     def process(self, data: Data) -> str | Any:
         return self._process(data)
 
-    # TODO support snapshots
     def _process(self, data: Data) -> str | Any:
         data = self.pre_process_data(data)
         result = self.process_data(data)
