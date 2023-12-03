@@ -16,7 +16,7 @@ from .codegen import Sal
 # TODO support filters from config file
 
 
-def _render(file: str, directories: list[str]) -> str | Any:
+def _render(file: str, directories: list[Path]) -> str | Any:
     sal = Sal.from_config(template_directories=directories)
     return sal.process_xml_from_filename(file)
 
@@ -38,7 +38,7 @@ def main() -> None:
 def render(filename: str, folder: str) -> None:
     click.echo(f"⚠️ {filename=}")
     click.echo(f"⚠️ {folder=}")
-    _render(filename, [str(Path(folder) / "templates")])
+    _render(filename, [Path(folder) / "templates"])
 
 
 # TODO snapshot

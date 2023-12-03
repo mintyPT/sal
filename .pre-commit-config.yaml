@@ -1,6 +1,4 @@
 # pre-commit install
-# https://nbdev.fast.ai/tutorials/pre_commit.html
-# https://pre-commit.com/hooks.html
 repos:
 - repo: https://github.com/python-poetry/poetry
   rev: '1.7.0'  # add version here
@@ -32,7 +30,7 @@ repos:
       description: "Export notebooks to modules and build modidx"
     - id: mypy-sal
       name: mypy
-      entry: mypy -m sal
+      entry: mypy -p sal
       language: system
       types: [python]
       pass_filenames: false
@@ -43,8 +41,3 @@ repos:
       language: system
       types: [python]
       exclude: ^(sal\/_modidx\.py)$
-    # - id: black
-    #   name: black
-    #   entry: black
-    #   language: system
-    #   types: [python] 

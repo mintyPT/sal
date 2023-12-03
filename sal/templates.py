@@ -6,6 +6,7 @@ __all__ = ['render_to_remove']
 # %% ../nbs/99_templates.ipynb 2
 from sal.core import Data
 from typing import Any, Optional
+from pathlib import Path
 from sal.frontmatter import FrontMatter
 from jinja2 import (
     Environment,
@@ -51,9 +52,11 @@ MissingTemplateException = TemplateNotFound
 
 
 class TemplateLoader:
-    def __init__(self, templates=None, folders: list[str] = None):
+    def __init__(
+        self, templates: dict[str, str] | None = None, folders: list[Path] | None = None
+    ):
         self.frontmatter_handler = FrontMatter()
-        loaders = [DictLoader(templates or {})]
+        loaders: list[DictLoader | FileSystemLoader] = [DictLoader(templates or {})]
         if folders:
             for folder in folders:
                 loaders.append(FileSystemLoader(folder))
@@ -62,7 +65,7 @@ class TemplateLoader:
     def get_source(self, name: str, frontmatter: Optional[bool] = False) -> str:
         if not name.endswith(".jinja2"):
             name = name + ".jinja2"
-        template, _, _ = self.loader.get_source(None, name)  # type: ignore[safe-super]
+        template, _, _ = self.loader.get_source(_get_env(), name)
         if not frontmatter:
             return self.frontmatter_handler.get_content(template)
         return self.frontmatter_handler.get_frontmatter_source(template)
@@ -71,7 +74,7 @@ class TemplateLoader:
         return self.get_source(name, frontmatter=True)
 
     @classmethod
-    def from_directories(cls, directories: list[str]) -> "TemplateLoader":
+    def from_directories(cls, directories: list[Path]) -> "TemplateLoader":
         return cls(folders=directories)
 
 # %% ../nbs/99_templates.ipynb 16
@@ -108,16 +111,14 @@ class Renderer:
     def process(self, data: Data) -> str:
         return self.render(data)
 
-    def get_source(self, *args, **kwargs) -> Any:
+    def get_source(self, *args: Any, **kwargs: Any) -> str:
         return self.repository.get_source(*args, **kwargs)
 
     def get_metadata_for_template(self, path: str, data: Data) -> dict:
-        template = self.repository.get_frontmatter_source(
-            path
-        )  # type: ignore[call-arg]
+        template = self.repository.get_frontmatter_source(path)
 
         rendered = self.render(data, template)
 
-        return self.repository.frontmatter_handler.parse(
-            rendered
-        )  # type: ignore[attr-defined]
+        ret: dict = self.repository.frontmatter_handler.parse(rendered)
+
+        return ret
