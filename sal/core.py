@@ -3,13 +3,13 @@
 # %% auto 0
 __all__ = ['WithChildrenMixin', 'Data', 'MappedData', 'map_data']
 
-# %% ../nbs/00_core.ipynb 2
+# %% ../nbs/00_core.ipynb 3
 from copy import deepcopy
 from textwrap import indent
 from collections import ChainMap
 from typing import Callable, Any, Generator, Sequence, Optional
 
-# %% ../nbs/00_core.ipynb 7
+# %% ../nbs/00_core.ipynb 8
 class WithChildrenMixin:
     """
     Adds `parent`/`children` functionality to a class.
@@ -48,7 +48,7 @@ class WithChildrenMixin:
 
         return iter_data(self)
 
-# %% ../nbs/00_core.ipynb 9
+# %% ../nbs/00_core.ipynb 10
 class Data(WithChildrenMixin):
     """
     Data holder used during code generation. Logic is kept as separate functions.
@@ -129,7 +129,7 @@ class Data(WithChildrenMixin):
 
     __repr__ = __str__
 
-# %% ../nbs/00_core.ipynb 34
+# %% ../nbs/00_core.ipynb 35
 class MappedData(WithChildrenMixin):
     """Data structure used to return results from the `map_data` function"""
 
@@ -137,7 +137,7 @@ class MappedData(WithChildrenMixin):
         self.value = value
         super().__init__()
 
-# %% ../nbs/00_core.ipynb 35
+# %% ../nbs/00_core.ipynb 36
 def map_data(obj: Data, process: Callable, level: int | None = 0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
     child_results = [map_data(c, process, level=(level or 0) + 1) for c in obj.children]

@@ -6,3 +6,7 @@ website:
       - 01_loaders.ipynb
       - 02_codegen.ipynb
       - 03_cli.ipynb
+      - 99_arguments.ipynb
+      - 99_frontmatter.ipynb
+      - 99_templates.ipynb
+      - 99_utils.ipynb

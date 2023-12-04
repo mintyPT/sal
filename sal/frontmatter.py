@@ -3,13 +3,13 @@
 # %% auto 0
 __all__ = ['FrontMatter']
 
-# %% ../nbs/99_frontmatter.ipynb 2
+# %% ../nbs/99_frontmatter.ipynb 3
 from typing import Any
 from textwrap import dedent
 from frontmatter.util import u  # type: ignore[import-untyped]
 from frontmatter.default_handlers import YAMLHandler  # type: ignore[import-untyped]
 
-# %% ../nbs/99_frontmatter.ipynb 5
+# %% ../nbs/99_frontmatter.ipynb 6
 class FrontMatter:
     def __init__(self, h: YAMLHandler | None = None):  # type: ignore[no-any-unimported]
         if h is None:

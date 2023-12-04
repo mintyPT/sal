@@ -3,13 +3,13 @@
 # %% auto 0
 __all__ = ['files', 'is_notebook']
 
-# %% ../nbs/99_utils.ipynb 2
+# %% ../nbs/99_utils.ipynb 3
 from pathlib import Path
 from typing import Generator
 from IPython import get_ipython
 from contextlib import contextmanager
 
-# %% ../nbs/99_utils.ipynb 4
+# %% ../nbs/99_utils.ipynb 5
 @contextmanager
 def files(content: dict[str, str]) -> Generator:
     """Setup files with content. No override if file already exists."""
@@ -28,7 +28,7 @@ def files(content: dict[str, str]) -> Generator:
             path = Path(filepath)
             path.unlink()
 
-# %% ../nbs/99_utils.ipynb 7
+# %% ../nbs/99_utils.ipynb 8
 def is_notebook() -> bool:
     """Check if we are running code in a notebook or in a shell"""
     try:

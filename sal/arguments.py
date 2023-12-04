@@ -3,11 +3,11 @@
 # %% auto 0
 __all__ = ['JsonType', 'parse_arg', 'parse_attrs']
 
-# %% ../nbs/99_arguments.ipynb 2
+# %% ../nbs/99_arguments.ipynb 3
 import json
 from typing import Union
 
-# %% ../nbs/99_arguments.ipynb 5
+# %% ../nbs/99_arguments.ipynb 6
 JsonType = Union[None, int, str, bool, list["JsonType"], dict[str, "JsonType"]]
 
 

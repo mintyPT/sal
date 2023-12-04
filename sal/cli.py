@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['main', 'render']
 
-# %% ../nbs/03_cli.ipynb 3
+# %% ../nbs/03_cli.ipynb 4
 import click
 from pathlib import Path
 from typing import Any
@@ -11,7 +11,7 @@ from typing import Any
 from .codegen import Sal
 from .utils import is_notebook
 
-# %% ../nbs/03_cli.ipynb 6
+# %% ../nbs/03_cli.ipynb 7
 # TODO support filters from config file
 
 
@@ -19,12 +19,12 @@ def _render(file: str, directories: list[Path]) -> str | Any:
     sal = Sal.from_config(template_directories=directories)
     return sal.process_xml_from_filename(file)
 
-# %% ../nbs/03_cli.ipynb 9
+# %% ../nbs/03_cli.ipynb 10
 @click.group()
 def main() -> None:
     pass
 
-# %% ../nbs/03_cli.ipynb 10
+# %% ../nbs/03_cli.ipynb 11
 # TODO : init command
 # - create : sal.xml file
 # - create : sal folder
@@ -45,6 +45,6 @@ def render(filename: str, folder: str) -> None:
 # TODO snapshot
 # TODO check.snapshot
 
-# %% ../nbs/03_cli.ipynb 11
+# %% ../nbs/03_cli.ipynb 12
 if __name__ == "__main__" and not is_notebook():
     main()

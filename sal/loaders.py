@@ -3,13 +3,13 @@
 # %% auto 0
 __all__ = ['xml_to_data', 'xml_file_to_data', 'dict_to_data', 'json_to_data']
 
-# %% ../nbs/01_loaders.ipynb 3
+# %% ../nbs/01_loaders.ipynb 4
 from json import loads
 from xml.etree import ElementTree
 
 from .core import Data
 
-# %% ../nbs/01_loaders.ipynb 5
+# %% ../nbs/01_loaders.ipynb 6
 def element_tree_to_data(obj: ElementTree.Element) -> Data:
     """Takes an ElementTree, and loads it into a Data instance"""
     attributes = obj.attrib.copy()
@@ -19,18 +19,18 @@ def element_tree_to_data(obj: ElementTree.Element) -> Data:
         data.append(c)
     return data
 
-# %% ../nbs/01_loaders.ipynb 8
+# %% ../nbs/01_loaders.ipynb 9
 def xml_to_data(xml: str) -> Data:
     """Takes a xml string, and loads it into a Data instance"""
     obj: ElementTree.Element = ElementTree.fromstring(xml)
     return element_tree_to_data(obj)
 
-# %% ../nbs/01_loaders.ipynb 10
+# %% ../nbs/01_loaders.ipynb 11
 def xml_file_to_data(path: str) -> Data:
     with open(path, "r") as h:
         return xml_to_data(h.read())
 
-# %% ../nbs/01_loaders.ipynb 14
+# %% ../nbs/01_loaders.ipynb 15
 def dict_to_data(arg: dict) -> Data:
     """Takes a dict, and loads it into a Data instance"""
     name = arg["name"]
@@ -45,7 +45,7 @@ def dict_to_data(arg: dict) -> Data:
         data.append(dict_to_data(c))
     return data
 
-# %% ../nbs/01_loaders.ipynb 19
+# %% ../nbs/01_loaders.ipynb 20
 def json_to_data(arg: str) -> Data:
     """Takes a json string, and loads it into a Data instance"""
     j = loads(arg)

@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['Config', 'Sal']
 
-# %% ../nbs/02_codegen.ipynb 2
+# %% ../nbs/02_codegen.ipynb 3
 import abc
 from pydantic import BaseModel
 from typing import Any, Callable
@@ -20,7 +20,7 @@ from sal.templates import (
     MissingTemplateException,
 )
 
-# %% ../nbs/02_codegen.ipynb 11
+# %% ../nbs/02_codegen.ipynb 12
 @dataclass
 class WriteFileResult:
     to: str
@@ -64,7 +64,7 @@ class GroupAction(SalAction):
     def process_data(self, sal: "Sal", data: Data) -> tuple[Any, None]:
         return [sal.process(d) for d in data.children], None
 
-# %% ../nbs/02_codegen.ipynb 12
+# %% ../nbs/02_codegen.ipynb 13
 class Config(BaseModel):
     template_directories: list[Path]
     filters: dict[str, Callable] = {}

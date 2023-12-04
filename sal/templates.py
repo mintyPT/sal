@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['render_to_remove']
 
-# %% ../nbs/99_templates.ipynb 2
+# %% ../nbs/99_templates.ipynb 3
 from pathlib import Path
 from typing import Any, Optional
 from jinja2 import (
@@ -20,11 +20,11 @@ from jinja2 import (
 from sal.core import Data
 from sal.frontmatter import FrontMatter
 
-# %% ../nbs/99_templates.ipynb 4
+# %% ../nbs/99_templates.ipynb 5
 def _get_env() -> Environment:
     return Environment(loader=BaseLoader(), undefined=StrictUndefined)
 
-# %% ../nbs/99_templates.ipynb 6
+# %% ../nbs/99_templates.ipynb 7
 def render_to_remove(
     template: str,  # template in string form
     filters: Optional[dict] = None,  # jinja filters
@@ -41,14 +41,14 @@ def render_to_remove(
 
     return result
 
-# %% ../nbs/99_templates.ipynb 10
+# %% ../nbs/99_templates.ipynb 11
 class TemplateRenderer:
     def render(self, template: str | None = None, **kwargs: Any) -> str:
         if template is None:
             raise RuntimeError("Missing template")
         return render_to_remove(template, **kwargs)
 
-# %% ../nbs/99_templates.ipynb 12
+# %% ../nbs/99_templates.ipynb 13
 MissingTemplateException = TemplateNotFound
 
 
@@ -78,7 +78,7 @@ class TemplateLoader:
     def from_directories(cls, directories: list[Path]) -> "TemplateLoader":
         return cls(folders=directories)
 
-# %% ../nbs/99_templates.ipynb 16
+# %% ../nbs/99_templates.ipynb 17
 # TODO remove "any" typings
 class Renderer:
     # if no template is passed in, we use the DEFAULT_TEMPLATE
