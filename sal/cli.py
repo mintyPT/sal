@@ -5,12 +5,11 @@ __all__ = ['main', 'render']
 
 # %% ../nbs/03_cli.ipynb 3
 import click
-
 from pathlib import Path
 from typing import Any
 
-from .utils import is_notebook
 from .codegen import Sal
+from .utils import is_notebook
 
 # %% ../nbs/03_cli.ipynb 6
 # TODO support filters from config file

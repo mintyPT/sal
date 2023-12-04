@@ -5,7 +5,6 @@ __all__ = ['Config', 'Sal']
 
 # %% ../nbs/02_codegen.ipynb 2
 import abc
-
 from pydantic import BaseModel
 from typing import Any, Callable
 from dataclasses import dataclass

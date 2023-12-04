@@ -4,10 +4,8 @@
 __all__ = ['render_to_remove']
 
 # %% ../nbs/99_templates.ipynb 2
-from sal.core import Data
-from typing import Any, Optional
 from pathlib import Path
-from sal.frontmatter import FrontMatter
+from typing import Any, Optional
 from jinja2 import (
     Environment,
     BaseLoader,
@@ -18,6 +16,9 @@ from jinja2 import (
     DictLoader,
     FileSystemLoader,
 )
+
+from sal.core import Data
+from sal.frontmatter import FrontMatter
 
 # %% ../nbs/99_templates.ipynb 4
 def _get_env() -> Environment:

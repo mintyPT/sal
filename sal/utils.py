@@ -4,10 +4,10 @@
 __all__ = ['files', 'is_notebook']
 
 # %% ../nbs/99_utils.ipynb 2
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Generator
 from IPython import get_ipython
+from contextlib import contextmanager
 
 # %% ../nbs/99_utils.ipynb 4
 @contextmanager

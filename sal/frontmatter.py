@@ -4,10 +4,10 @@
 __all__ = ['FrontMatter']
 
 # %% ../nbs/99_frontmatter.ipynb 2
-from frontmatter.default_handlers import YAMLHandler  # type: ignore[import-untyped]
-from frontmatter.util import u  # type: ignore[import-untyped]
-from textwrap import dedent
 from typing import Any
+from textwrap import dedent
+from frontmatter.util import u  # type: ignore[import-untyped]
+from frontmatter.default_handlers import YAMLHandler  # type: ignore[import-untyped]
 
 # %% ../nbs/99_frontmatter.ipynb 5
 class FrontMatter:
