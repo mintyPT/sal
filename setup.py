@@ -43,7 +43,7 @@ statuses = [
     "6 - Mature",
     "7 - Inactive",
 ]
-py_versions = "3.6 3.7 3.8 3.9 3.10".split()
+py_versions = "3.10".split()
 
 requirements = cfg.get("requirements", "").split()
 if cfg.get("pip_requirements"):
