@@ -6,7 +6,7 @@ __all__ = ['main', 'render']
 # %% ../nbs/03_cli.ipynb 4
 import click
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 from .codegen import Sal
 from .utils import is_notebook
 
@@ -14,7 +14,7 @@ from .utils import is_notebook
 # TODO support filters from config file
 
 
-def _render(file: str, directories: list[Path]) -> str | Any:
+def _render(file: str, directories: list[Path]) -> Union[str, Any]:
     sal = Sal.from_config(template_directories=directories)
     return sal.process_xml_from_filename(file)
 
