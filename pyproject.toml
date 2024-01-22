@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sal-code-generator"
-version = "0.0.25"
+version = "0.0.30"
 description = ""
 authors = ["mauro santos <mauro.goncalo@gmail.com>"]
 readme = "README.md"
