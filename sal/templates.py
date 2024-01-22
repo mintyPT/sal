@@ -43,7 +43,7 @@ def render_to_remove(
 
 # %% ../nbs/99_templates.ipynb 11
 class TemplateRenderer:
-    def render(self, template: str | None = None, **kwargs: Any) -> str:
+    def render(self, template: Optional[str] = None, **kwargs: Any) -> str:
         if template is None:
             raise RuntimeError("Missing template")
         return render_to_remove(template, **kwargs)
