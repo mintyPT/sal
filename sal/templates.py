@@ -5,7 +5,7 @@ __all__ = ['render_to_remove']
 
 # %% ../nbs/99_templates.ipynb 3
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from jinja2 import (
     Environment,
     BaseLoader,
@@ -54,10 +54,14 @@ MissingTemplateException = TemplateNotFound
 
 class TemplateLoader:
     def __init__(
-        self, templates: dict[str, str] | None = None, folders: list[Path] | None = None
+        self,
+        templates: Optional[dict[str, str]] = None,
+        folders: Optional[list[Path]] = None,
     ):
         self.frontmatter_handler = FrontMatter()
-        loaders: list[DictLoader | FileSystemLoader] = [DictLoader(templates or {})]
+        loaders: list[Union[DictLoader, FileSystemLoader]] = [
+            DictLoader(templates or {})
+        ]
         if folders:
             for folder in folders:
                 loaders.append(FileSystemLoader(folder))
@@ -89,7 +93,7 @@ class Renderer:
         *,
         renderer: TemplateRenderer,
         repository: TemplateLoader,
-        filters: dict | None = None
+        filters: Optional[dict] = None
     ):
         self.renderer = renderer
         self.repository = repository

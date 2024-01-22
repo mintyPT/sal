@@ -10,6 +10,7 @@ from typing import Any, Callable
 from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
+from typing import Optional
 
 from .core import Data
 from .loaders import xml_file_to_data
@@ -36,7 +37,7 @@ class SalAction(abc.ABC):
     @abc.abstractmethod
     def process_data(
         self, sal: "Sal", data: Data
-    ) -> tuple[str, WriteFileResult | None]:
+    ) -> tuple[str, Optional[WriteFileResult]]:
         pass
 
     def __str__(self) -> str:
@@ -89,7 +90,7 @@ class Sal:
             d.attrs.update(new_attributes)
         return data
 
-    def process_data(self, data: Data) -> str | Any:
+    def process_data(self, data: Data) -> Optional[str]:
         try:
             for action in self.actions:
                 if data.name == action.name:
@@ -115,7 +116,7 @@ class Sal:
                 ).strip()
             )
 
-    def process_xml_from_filename(self, file: str) -> str | Any:
+    def process_xml_from_filename(self, file: str) -> Optional[str]:
         struct: Data = xml_file_to_data(file)
         return self.process(struct)
 
@@ -128,10 +129,10 @@ class Sal:
             else:
                 raise RuntimeError(f"Unsupported action {action_result}")
 
-    def process(self, data: Data) -> str | Any:
+    def process(self, data: Data) -> Optional[str]:
         return self._process(data)
 
-    def _process(self, data: Data) -> str | Any:
+    def _process(self, data: Data) -> Optional[str]:
         data = self.pre_process_data(data)
         result = self.process_data(data)
         self.process_action_results()
@@ -142,7 +143,7 @@ class Sal:
         cls,
         *,
         template_directories: list[Path],
-        filters: dict[str, Callable] | None = None,
+        filters: Optional[dict[str, Callable]] = None,
     ) -> "Sal":
         config = Config(
             template_directories=template_directories, filters=filters or {}

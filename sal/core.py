@@ -16,7 +16,7 @@ class WithChildrenMixin:
     """
 
     def __init__(self) -> None:
-        self.parent: "WithChildrenMixin" | None = None
+        self.parent: Optional["WithChildrenMixin"] = None
         self.children: Sequence["WithChildrenMixin"] = []
 
     def __len__(self) -> int:
@@ -40,7 +40,7 @@ class WithChildrenMixin:
         self.parent = parent
 
     def __iter__(self) -> Generator:
-        def iter_data(obj: "WithChildrenMixin", level: int | None = 0) -> Generator:
+        def iter_data(obj: "WithChildrenMixin", level: Optional[int] = 0) -> Generator:
             """Simply yields parent and then children"""
             yield obj, level
             for child in obj.children:
@@ -60,7 +60,7 @@ class Data(WithChildrenMixin):
     def __init__(
         self,
         name: str,  # Name of this element
-        attrs: dict[str, Any] | None = None,  # Attributes for this element
+        attrs: Optional[dict[str, Any]] = None,  # Attributes for this element
     ) -> None:
         """
         Initialize Data object.
@@ -138,7 +138,7 @@ class MappedData(WithChildrenMixin):
         super().__init__()
 
 # %% ../nbs/00_core.ipynb 36
-def map_data(obj: Data, process: Callable, level: int | None = 0) -> MappedData:
+def map_data(obj: Data, process: Callable, level: Optional[int] = 0) -> MappedData:
     """Maps over a `Data` inst returning `MappedData` instances"""
     child_results = [map_data(c, process, level=(level or 0) + 1) for c in obj.children]
     value = process(obj, level)

@@ -7,7 +7,6 @@ __all__ = ['main', 'render']
 import click
 from pathlib import Path
 from typing import Any
-
 from .codegen import Sal
 from .utils import is_notebook
 
