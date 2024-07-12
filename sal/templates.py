@@ -103,15 +103,13 @@ class Renderer:
         if template is None:
             template = self.repository.get_source(data.name)
 
-        ret = self.renderer.render(
+        return self.renderer.render(
             template=template,
             **data.attrs,
             filters={**self.filters, "render": self.render},
             node=data,
             children=data.children,
         )
-
-        return ret
 
     def process(self, data: Data) -> str:
         return self.render(data)

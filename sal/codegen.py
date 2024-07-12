@@ -4,6 +4,8 @@
 __all__ = ['Config', 'Sal']
 
 # %% ../nbs/02_codegen.ipynb 3
+# TODO Configure logging
+import logging
 import abc
 from pydantic import BaseModel
 from typing import Any, Callable
@@ -44,21 +46,6 @@ class SalAction(abc.ABC):
         return f"action:{self.name}"
 
 
-class ToFileAction(SalAction):
-    name = "to-file"
-
-    def process_data(self, sal: "Sal", data: Data) -> tuple[str, WriteFileResult]:
-        rendered = sal.renderer.render(data, template=Renderer.DEFAULT_TEMPLATE)
-
-        if "to" not in data.attrs:
-            raise RuntimeError(
-                "To save to file you need to define the 'to' attribute with a filepath"
-            )
-        to = data.attrs["to"]
-
-        return rendered, WriteFileResult(to=to, content=rendered)
-
-
 class GroupAction(SalAction):
     name = "group"
 
@@ -75,7 +62,7 @@ class Sal:
     def __init__(self, config: Config, renderer: Renderer):
         self.config = config
         self.renderer = renderer
-        self.actions = [ToFileAction(), GroupAction()]  #  ToStringAction()
+        self.actions = [GroupAction()]  #  ToStringAction()
         self.action_results: list[WriteFileResult] = []
 
     @property
@@ -92,13 +79,22 @@ class Sal:
 
     def process_data(self, data: Data) -> Optional[str]:
         try:
+
             for action in self.actions:
                 if data.name == action.name:
                     ret, action_result = action.process_data(self, data)
                     if action_result:
                         self.action_results.append(action_result)
-                    return ret
-            return self.renderer.process(data)
+                    return ret  # type: ignore
+
+            res: str = self.renderer.process(data)
+
+            # TODO supposedely a child get a parents attrs so why does the child not get rendered to?
+            if save := data.attrs.get("to-file"):
+                self.action_results.append(WriteFileResult(to=save, content=res))
+
+            return res
+
         except MissingTemplateException as e:
             path = Path(self.config.template_directories[0]) / f"{e.name}.jinja2"
             raise RuntimeError(
@@ -123,7 +119,9 @@ class Sal:
     def process_action_results(self) -> None:
         for action_result in self.action_results:
             if isinstance(action_result, WriteFileResult):
-                print("writing to {result.to}: '{content}'")
+                logging.info(
+                    f"Writing to {action_result.to}:\n {action_result.content}\n\n"
+                )
                 with open(action_result.to, "w") as h:
                     h.write(action_result.content)
             else:
