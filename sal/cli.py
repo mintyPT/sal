@@ -7,7 +7,7 @@ __all__ = ['main', 'render']
 import click
 from pathlib import Path
 from typing import Any, Union
-from .codegen import Sal
+from .codegen import from_config
 from .utils import is_notebook
 
 # %% ../nbs/03_cli.ipynb 7
@@ -15,7 +15,7 @@ from .utils import is_notebook
 
 
 def _render(file: str, directories: list[Path]) -> Union[str, Any]:
-    sal = Sal.from_config(template_directories=directories)
+    sal = from_config(template_directories=directories)
     return sal.process_xml_from_filename(file)
 
 # %% ../nbs/03_cli.ipynb 10
