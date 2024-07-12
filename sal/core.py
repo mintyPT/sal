@@ -29,13 +29,13 @@ class Data:
         """
 
         self.name = name
-
-        if attrs is None:
-            attrs = {}
-        self._attrs = attrs
-
+        # TODO accept parent directly in init?
         self.parent: Optional["Data"] = None
         self.children: Sequence["Data"] = []
+
+        # we don't directly store them because the final attributes are
+        # composed by the attributes of itself and its parents.
+        self._attrs = {} if attrs is None else attrs
 
     @property
     def attrs(self) -> ChainMap:
@@ -54,12 +54,25 @@ class Data:
         """
         return deepcopy(self)
 
+    def append(self, child: "Data") -> "Data":
+        """
+        Add a child element to the children list and set its parent to self.
+        """
+        self.children.append(child)  # type: ignore[attr-defined]
+        child.set_parent(self)
+        return child
+
+    def set_parent(self, parent: "Data") -> None:
+        """
+        Set the parent element of self.
+        """
+        self.parent = parent
+
     def __eq__(self, a: Any) -> bool:
         """
         Compare this Data object with another object for equality.
 
         """
-        print("==")
         same_name: bool = self.name == a.name
         same_attrs: bool = self.attrs == a.attrs
         same_children: bool = self.children == a.children
@@ -94,20 +107,6 @@ class Data:
 
     def __contains__(self, child: "Data") -> bool:
         return child in self.children
-
-    def append(self, child: "Data") -> "Data":
-        """
-        Add a child element to the children list and set its parent to self.
-        """
-        self.children.append(child)  # type: ignore[attr-defined]
-        child.set_parent(self)
-        return child
-
-    def set_parent(self, parent: "Data") -> None:
-        """
-        Set the parent element of self.
-        """
-        self.parent = parent
 
     def __iter__(self) -> Generator:
         def iter_data(obj: "Data", level: Optional[int] = 0) -> Generator:
