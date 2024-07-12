@@ -4,12 +4,13 @@
 __all__ = ['Data']
 
 # %% ../nbs/00_core.ipynb 3
+import logging
 from copy import deepcopy
 from textwrap import indent
 from collections import ChainMap
 from typing import Any, Generator, Sequence, Optional
 
-# %% ../nbs/00_core.ipynb 7
+# %% ../nbs/00_core.ipynb 8
 class Data:
     """
     Data holder used during code generation. Logic is kept as separate functions.
@@ -66,6 +67,7 @@ class Data:
         """
         Set the parent element of self.
         """
+        logging.info("Setting parent %s for %s", parent, self)
         self.parent = parent
 
     def __eq__(self, a: Any) -> bool:
@@ -78,7 +80,7 @@ class Data:
         same_children: bool = self.children == a.children
         return same_name and same_attrs and same_children
 
-    def __str__(self) -> str:
+    def as_tree(self) -> str:
         """
         Get the string representation of this Data object.
 
@@ -102,6 +104,9 @@ class Data:
         else:
             return f"<{self.name}>{children}</{self.name}>"
 
+    def __str__(self) -> str:
+        return f"[{self.name} {dict(self.attrs)}]"
+
     def __len__(self) -> int:
         return len(self.children)
 
@@ -117,4 +122,4 @@ class Data:
 
         return iter_data(self)
 
-    __repr__ = __str__
+    __repr__ = as_tree

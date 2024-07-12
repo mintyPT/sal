@@ -25,7 +25,7 @@ from sal.templates import (
 
 # %% ../nbs/02_codegen.ipynb 12
 @dataclass
-class WriteFileResult:
+class ToFile:
     to: str
     content: str
 
@@ -37,17 +37,15 @@ class SalAction(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def process_data(
-        self, sal: "Sal", data: Data
-    ) -> tuple[str, Optional[WriteFileResult]]:
+    def process_data(self, sal: "Sal", data: Data) -> tuple[str, Optional[ToFile]]:
         pass
 
     def __str__(self) -> str:
         return f"action:{self.name}"
 
 
-class GroupAction(SalAction):
-    name = "group"
+class SalListAction(SalAction):
+    name = "sal-list"
 
     def process_data(self, sal: "Sal", data: Data) -> tuple[Any, None]:
         return [sal.process(d) for d in data.children], None
@@ -62,8 +60,8 @@ class Sal:
     def __init__(self, config: Config, renderer: Renderer):
         self.config = config
         self.renderer = renderer
-        self.actions = [GroupAction()]  #  ToStringAction()
-        self.action_results: list[WriteFileResult] = []
+        self.actions = [SalListAction()]  #  ToStringAction()
+        self.action_results: list[ToFile] = []
 
     @property
     def action_names(self) -> list[str]:
@@ -91,7 +89,7 @@ class Sal:
 
             # TODO supposedely a child get a parents attrs so why does the child not get rendered to?
             if save := data.attrs.get("to-file"):
-                self.action_results.append(WriteFileResult(to=save, content=res))
+                self.action_results.append(ToFile(to=save, content=res))
 
             return res
 
@@ -118,7 +116,7 @@ class Sal:
 
     def process_action_results(self) -> None:
         for action_result in self.action_results:
-            if isinstance(action_result, WriteFileResult):
+            if isinstance(action_result, ToFile):
                 logging.info(
                     f"Writing to {action_result.to}:\n {action_result.content}\n\n"
                 )
