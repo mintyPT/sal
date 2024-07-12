@@ -9,7 +9,7 @@ from textwrap import indent
 from collections import ChainMap
 from typing import Any, Generator, Sequence, Optional
 
-# %% ../nbs/00_core.ipynb 9
+# %% ../nbs/00_core.ipynb 7
 class Data:
     """
     Data holder used during code generation. Logic is kept as separate functions.
