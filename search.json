@@ -1,0 +1,212 @@
+[
+  {
+    "objectID": "loaders.html",
+    "href": "loaders.html",
+    "title": "Loaders",
+    "section": "",
+    "text": "To load from an ElementTree",
+    "crumbs": [
+      "Loaders"
+    ]
+  },
+  {
+    "objectID": "loaders.html#elementtree",
+    "href": "loaders.html#elementtree",
+    "title": "Loaders",
+    "section": "",
+    "text": "To load from an ElementTree",
+    "crumbs": [
+      "Loaders"
+    ]
+  },
+  {
+    "objectID": "loaders.html#xml",
+    "href": "loaders.html#xml",
+    "title": "Loaders",
+    "section": "xml",
+    "text": "xml\nTo load from xml\n\n\nxml_to_data\n\n xml_to_data (xml:str)\n\nTakes a xml string, and loads it into a Data instance\n\nxml_to_data('&lt;root at=\"b\"&gt;&lt;child&gt;&lt;/child&gt;&lt;/root&gt;')\n\n\n\n\nxml_file_to_data\n\n xml_file_to_data (path:str)",
+    "crumbs": [
+      "Loaders"
+    ]
+  },
+  {
+    "objectID": "loaders.html#dict",
+    "href": "loaders.html#dict",
+    "title": "Loaders",
+    "section": "dict",
+    "text": "dict\nTo load from a dict\n\n\ndict_to_data\n\n dict_to_data (arg:dict)\n\nTakes a dict, and loads it into a Data instance\n\ndict_to_data({\"name\": \"root\", \"children\": [{\"name\": \"child\", \"color\": \"blue\"}]})",
+    "crumbs": [
+      "Loaders"
+    ]
+  },
+  {
+    "objectID": "loaders.html#json",
+    "href": "loaders.html#json",
+    "title": "Loaders",
+    "section": "json",
+    "text": "json\nTo load from json\n\n\njson_to_data\n\n json_to_data (arg:str)\n\nTakes a json string, and loads it into a Data instance\n\njson_to_data('{\"name\": \"root\", \"children\": [{\"name\": \"child\"}]}')",
+    "crumbs": [
+      "Loaders"
+    ]
+  },
+  {
+    "objectID": "cli.html",
+    "href": "cli.html",
+    "title": "Command Line Interface",
+    "section": "",
+    "text": "Up until now, we’ve been developing the code we need to generate code. Now it’s time to wrap that code in a easy to use function to use as a command line interface. This cli will mirror the args of this function so:\n\nit accepts an xml file path as input\nit accepts a template directory as an input\n\nAlso, when a certain template does not exist, it will create one with a default template Renderer.DEFAULT_TEMPLATE.\n\n\n\n\n\n &lt;Group main&gt; (*args:Any, **kwargs:Any)\n\n\n\n\n\n\n &lt;Command render&gt; (*args:Any, **kwargs:Any)",
+    "crumbs": [
+      "Command Line Interface"
+    ]
+  },
+  {
+    "objectID": "cli.html#generating-code",
+    "href": "cli.html#generating-code",
+    "title": "Command Line Interface",
+    "section": "",
+    "text": "Up until now, we’ve been developing the code we need to generate code. Now it’s time to wrap that code in a easy to use function to use as a command line interface. This cli will mirror the args of this function so:\n\nit accepts an xml file path as input\nit accepts a template directory as an input\n\nAlso, when a certain template does not exist, it will create one with a default template Renderer.DEFAULT_TEMPLATE.\n\n\n\n\n\n &lt;Group main&gt; (*args:Any, **kwargs:Any)\n\n\n\n\n\n\n &lt;Command render&gt; (*args:Any, **kwargs:Any)",
+    "crumbs": [
+      "Command Line Interface"
+    ]
+  },
+  {
+    "objectID": "arguments.html",
+    "href": "arguments.html",
+    "title": "Arguments handling",
+    "section": "",
+    "text": "In the XML files, to pass more complex types of data we accept json in the xml attributes and as such, we create a function to parse it\n\n\n\nparse_attrs\n\n parse_attrs (attrs:dict[str,str])\n\nParses a dictonary of string into a dictonary of parsed values.\n\n\n\nparse_arg\n\n parse_arg (arg:str)\n\nParses a single arg in string format using json.",
+    "crumbs": [
+      "Arguments handling"
+    ]
+  },
+  {
+    "objectID": "templates.html",
+    "href": "templates.html",
+    "title": "Template related things",
+    "section": "",
+    "text": "We need a rendering function capable of renderering a `template`, with `filters` and `context variables`...",
+    "crumbs": [
+      "Template related things"
+    ]
+  },
+  {
+    "objectID": "templates.html#template-loading",
+    "href": "templates.html#template-loading",
+    "title": "Template related things",
+    "section": "Template loading",
+    "text": "Template loading\nWe will need a way to get the templates",
+    "crumbs": [
+      "Template related things"
+    ]
+  },
+  {
+    "objectID": "templates.html#tying-rendering-and-loading-together",
+    "href": "templates.html#tying-rendering-and-loading-together",
+    "title": "Template related things",
+    "section": "Tying rendering and loading together",
+    "text": "Tying rendering and loading together\nAnd finally, put these 2 together to form a class to render a Data instance\nThe entry point for this class, after __init__, is the process method",
+    "crumbs": [
+      "Template related things"
+    ]
+  },
+  {
+    "objectID": "utils.html",
+    "href": "utils.html",
+    "title": "Files",
+    "section": "",
+    "text": "files\n\n files (content:dict[str,str])\n\nSetup files with content. No override if file already exists.\n\n\nOther\n\n\nis_notebook\n\n is_notebook ()\n\nCheck if we are running code in a notebook or in a shell",
+    "crumbs": [
+      "Files"
+    ]
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "Core",
+    "section": "",
+    "text": "Out code generator will need a class to hold data while doing code generation. For this reason, the first class we are developing is creatively named Data\n\n\n\n\n Data (name:str, attrs:Optional[dict[str,Any]]=None)\n\nData holder used during code generation. Logic is kept as separate functions.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nname\nstr\n\nName of this element\n\n\nattrs\nOptional\nNone\nAttributes for this element\n\n\nReturns\nNone\n\n\n\n\n\n\n\n\n\njames = Data(\"person\", {\"name\": \"james\"})\n\ntest_eq(james.name, \"person\")\ntest_eq(james.attrs, {\"name\": \"james\"})\n\nWe can add children (note: a child’s attributes will also include those of his parent)\n\njames = Data(\"person\", {\"name\": \"james\", \"root\": \"true\"})\nolive = Data(\"person\", {\"name\": \"olive\"})\nsilva = Data(\"person\", {\"name\": \"silva\"})\nandrew = Data(\"person\", {\"name\": \"andrew\"})\njohn = Data(\"person\", {\"name\": \"john\"})\njane = Data(\"person\", {\"name\": \"jane\"})\nnoname = Data(\"person\", {\"name\": \"\"})\n\njames.append(olive)\njames.append(silva)\njames.append(john)\n\nolive.append(andrew)\nolive.append(jane)\nolive.append(noname)\n\n\n# ---\ntest_eq(james.children[0].attrs[\"name\"], \"olive\")\ntest_eq(jane.attrs[\"root\"], \"true\")\n\nINFO:root:Setting parent [person {'name': 'james', 'root': 'true'}] for [person {'name': 'olive'}]\nINFO:root:Setting parent [person {'name': 'james', 'root': 'true'}] for [person {'name': 'silva'}]\nINFO:root:Setting parent [person {'name': 'james', 'root': 'true'}] for [person {'name': 'john'}]\nINFO:root:Setting parent [person {'name': 'olive', 'root': 'true'}] for [person {'name': 'andrew'}]\nINFO:root:Setting parent [person {'name': 'olive', 'root': 'true'}] for [person {'name': 'jane'}]\nINFO:root:Setting parent [person {'name': 'olive', 'root': 'true'}] for [person {'name': ''}]\n\n\nand a child will know its parent\n\nprint(olive.parent.attrs[\"name\"])\n\n# ---\nassert james == olive.parent\n# test_eq(james, olive.parent)\n\njames\n\n\nTo check the number of children, simply use len\n\nlen(james)\n\n# ---\nassert len(james) == 3\n\nYou can compare elements but they are tested based on their attributes and children\n\nb = Data(\"b\", {\"age\": 22})\nc = Data(\"b\", {\"age\": 22})\nd = Data(\"d\")\nb.append(d)\nc.append(d)\n\n# ---\nassert b == c\n# test_eq(b, c)\nassert Data(\"b\", {\"name\": \"santos\"}) == Data(\"b\", {\"name\": \"santos\"})\n# test_eq(Data(\"b\", {\"name\": \"santos\"}), Data(\"b\", {\"name\": \"santos\"}))\nassert Data(\"b\") != Data(\"c\")\n# test_ne(Data(\"b\"), Data(\"c\"))\nassert Data(\"b\", {\"name\": \"silva\"}) != Data(\"b\", {\"name\": \"santos\"})\n# test_ne(Data(\"b\", {\"name\": \"silva\"}), Data(\"b\", {\"name\": \"santos\"}))\n\nINFO:root:Setting parent [b {'age': 22}] for [d {}]\nINFO:root:Setting parent [b {'age': 22}] for [d {'age': 22}]\n\n\nYou can test if an element is a child of another\n\ntest_eq(olive in james, True)\n\n\n\n\nYou can duplicate any Data instance\n\njames.clone()\n\n&lt;person {'name': 'james', 'root': 'true'}&gt;\n    [person {'name': 'olive', 'root': 'true'}]\n    [person {'name': 'silva', 'root': 'true'}]\n    [person {'name': 'john', 'root': 'true'}]\n&lt;/person&gt;\n\n\n\n\n\n\n\nIf you just need to iterate through all the elements, a simple loop will suffice\n\nfor person, level in james:\n    print(\"   \" * level, person.name + \"::\" + person.attrs[\"name\"])\n\n person::james\n    person::olive\n       person::andrew\n       person::jane\n       person::\n    person::silva\n    person::john",
+    "crumbs": [
+      "Core"
+    ]
+  },
+  {
+    "objectID": "core.html#data",
+    "href": "core.html#data",
+    "title": "Core",
+    "section": "",
+    "text": "Out code generator will need a class to hold data while doing code generation. For this reason, the first class we are developing is creatively named Data\n\n\n\n\n Data (name:str, attrs:Optional[dict[str,Any]]=None)\n\nData holder used during code generation. Logic is kept as separate functions.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nname\nstr\n\nName of this element\n\n\nattrs\nOptional\nNone\nAttributes for this element\n\n\nReturns\nNone\n\n\n\n\n\n\n\n\n\njames = Data(\"person\", {\"name\": \"james\"})\n\ntest_eq(james.name, \"person\")\ntest_eq(james.attrs, {\"name\": \"james\"})\n\nWe can add children (note: a child’s attributes will also include those of his parent)\n\njames = Data(\"person\", {\"name\": \"james\", \"root\": \"true\"})\nolive = Data(\"person\", {\"name\": \"olive\"})\nsilva = Data(\"person\", {\"name\": \"silva\"})\nandrew = Data(\"person\", {\"name\": \"andrew\"})\njohn = Data(\"person\", {\"name\": \"john\"})\njane = Data(\"person\", {\"name\": \"jane\"})\nnoname = Data(\"person\", {\"name\": \"\"})\n\njames.append(olive)\njames.append(silva)\njames.append(john)\n\nolive.append(andrew)\nolive.append(jane)\nolive.append(noname)\n\n\n# ---\ntest_eq(james.children[0].attrs[\"name\"], \"olive\")\ntest_eq(jane.attrs[\"root\"], \"true\")\n\nINFO:root:Setting parent [person {'name': 'james', 'root': 'true'}] for [person {'name': 'olive'}]\nINFO:root:Setting parent [person {'name': 'james', 'root': 'true'}] for [person {'name': 'silva'}]\nINFO:root:Setting parent [person {'name': 'james', 'root': 'true'}] for [person {'name': 'john'}]\nINFO:root:Setting parent [person {'name': 'olive', 'root': 'true'}] for [person {'name': 'andrew'}]\nINFO:root:Setting parent [person {'name': 'olive', 'root': 'true'}] for [person {'name': 'jane'}]\nINFO:root:Setting parent [person {'name': 'olive', 'root': 'true'}] for [person {'name': ''}]\n\n\nand a child will know its parent\n\nprint(olive.parent.attrs[\"name\"])\n\n# ---\nassert james == olive.parent\n# test_eq(james, olive.parent)\n\njames\n\n\nTo check the number of children, simply use len\n\nlen(james)\n\n# ---\nassert len(james) == 3\n\nYou can compare elements but they are tested based on their attributes and children\n\nb = Data(\"b\", {\"age\": 22})\nc = Data(\"b\", {\"age\": 22})\nd = Data(\"d\")\nb.append(d)\nc.append(d)\n\n# ---\nassert b == c\n# test_eq(b, c)\nassert Data(\"b\", {\"name\": \"santos\"}) == Data(\"b\", {\"name\": \"santos\"})\n# test_eq(Data(\"b\", {\"name\": \"santos\"}), Data(\"b\", {\"name\": \"santos\"}))\nassert Data(\"b\") != Data(\"c\")\n# test_ne(Data(\"b\"), Data(\"c\"))\nassert Data(\"b\", {\"name\": \"silva\"}) != Data(\"b\", {\"name\": \"santos\"})\n# test_ne(Data(\"b\", {\"name\": \"silva\"}), Data(\"b\", {\"name\": \"santos\"}))\n\nINFO:root:Setting parent [b {'age': 22}] for [d {}]\nINFO:root:Setting parent [b {'age': 22}] for [d {'age': 22}]\n\n\nYou can test if an element is a child of another\n\ntest_eq(olive in james, True)\n\n\n\n\nYou can duplicate any Data instance\n\njames.clone()\n\n&lt;person {'name': 'james', 'root': 'true'}&gt;\n    [person {'name': 'olive', 'root': 'true'}]\n    [person {'name': 'silva', 'root': 'true'}]\n    [person {'name': 'john', 'root': 'true'}]\n&lt;/person&gt;\n\n\n\n\n\n\n\nIf you just need to iterate through all the elements, a simple loop will suffice\n\nfor person, level in james:\n    print(\"   \" * level, person.name + \"::\" + person.attrs[\"name\"])\n\n person::james\n    person::olive\n       person::andrew\n       person::jane\n       person::\n    person::silva\n    person::john",
+    "crumbs": [
+      "Core"
+    ]
+  },
+  {
+    "objectID": "codegen.html",
+    "href": "codegen.html",
+    "title": "Code Generation",
+    "section": "",
+    "text": "In it’s basic form, it will combine xml files converted to Data structures, with jinja templates, to render code. Later we will also introduce some frontmatter.\nFor this, we need a basic structure to work with for generating code. As an example, we’ll be working with an hypotetical “model”\n\nstruct: Data = xml_to_data(\n    \"\"\"\n    &lt;model name=\"User\"&gt;\n        &lt;field name=\"id\" type=\"integer\"/&gt;\n        &lt;field name=\"username\" type=\"char\"/&gt;\n        &lt;field name=\"email\" type=\"email\"/&gt;\n    &lt;/model&gt;\n\"\"\"\n)\n\n…and the basic templates used with this structure are:\n\nmodel = (\n    \"class {{ name }}Model(models.Model):\\n\"\n    \"    {%- for child in children %}\\n\"\n    \"    {{ child | render }}\\n\"\n    \"    {%- endfor %}\\n\"\n)\n\nfield = \"{{ name }} = models.{{ type | title }}Field()\"",
+    "crumbs": [
+      "Code Generation"
+    ]
+  },
+  {
+    "objectID": "codegen.html#what-code-generation-means-with-sal",
+    "href": "codegen.html#what-code-generation-means-with-sal",
+    "title": "Code Generation",
+    "section": "",
+    "text": "In it’s basic form, it will combine xml files converted to Data structures, with jinja templates, to render code. Later we will also introduce some frontmatter.\nFor this, we need a basic structure to work with for generating code. As an example, we’ll be working with an hypotetical “model”\n\nstruct: Data = xml_to_data(\n    \"\"\"\n    &lt;model name=\"User\"&gt;\n        &lt;field name=\"id\" type=\"integer\"/&gt;\n        &lt;field name=\"username\" type=\"char\"/&gt;\n        &lt;field name=\"email\" type=\"email\"/&gt;\n    &lt;/model&gt;\n\"\"\"\n)\n\n…and the basic templates used with this structure are:\n\nmodel = (\n    \"class {{ name }}Model(models.Model):\\n\"\n    \"    {%- for child in children %}\\n\"\n    \"    {{ child | render }}\\n\"\n    \"    {%- endfor %}\\n\"\n)\n\nfield = \"{{ name }} = models.{{ type | title }}Field()\"",
+    "crumbs": [
+      "Code Generation"
+    ]
+  },
+  {
+    "objectID": "codegen.html#code-generator-i-jinja-only",
+    "href": "codegen.html#code-generator-i-jinja-only",
+    "title": "Code Generation",
+    "section": "Code generator I (jinja only)",
+    "text": "Code generator I (jinja only)\nNow that we can render jinja2, we can make a basic code generator\n\n\nSal\n\n Sal (config:__main__.Config, renderer:sal.templates.Renderer)\n\nInitialize self. See help(type(self)) for accurate signature.\n\n\n\nConfig\n\n Config (template_directories:list[pathlib.Path],\n         filters:dict[str,typing.Callable]={})\n\n*!!! abstract “Usage Documentation” Models\nA base class for creating Pydantic models.\nAttributes: class_vars: The names of the class variables defined on the model. private_attributes: Metadata about the private attributes of the model. signature: The synthesized __init__ [Signature][inspect.Signature] of the model.\n__pydantic_complete__: Whether model building is completed, or if there are still undefined fields.\n__pydantic_core_schema__: The core schema of the model.\n__pydantic_custom_init__: Whether the model has a custom `__init__` function.\n__pydantic_decorators__: Metadata containing the decorators defined on the model.\n    This replaces `Model.__validators__` and `Model.__root_validators__` from Pydantic V1.\n__pydantic_generic_metadata__: Metadata for generic models; contains data used for a similar purpose to\n    __args__, __origin__, __parameters__ in typing-module generics. May eventually be replaced by these.\n__pydantic_parent_namespace__: Parent namespace of the model, used for automatic rebuilding of models.\n__pydantic_post_init__: The name of the post-init method for the model, if defined.\n__pydantic_root_model__: Whether the model is a [`RootModel`][pydantic.root_model.RootModel].\n__pydantic_serializer__: The `pydantic-core` `SchemaSerializer` used to dump instances of the model.\n__pydantic_validator__: The `pydantic-core` `SchemaValidator` used to validate instances of the model.\n\n__pydantic_fields__: A dictionary of field names and their corresponding [`FieldInfo`][pydantic.fields.FieldInfo] objects.\n__pydantic_computed_fields__: A dictionary of computed field names and their corresponding [`ComputedFieldInfo`][pydantic.fields.ComputedFieldInfo] objects.\n\n__pydantic_extra__: A dictionary containing extra values, if [`extra`][pydantic.config.ConfigDict.extra]\n    is set to `'allow'`.\n__pydantic_fields_set__: The names of fields explicitly set during instantiation.\n__pydantic_private__: Values of private attributes set on the model instance.*\n\n\n\nfrom_config\n\n from_config (template_directories:list[pathlib.Path],\n              filters:Optional[dict[str,Callable]]=None)\n\nIt’s important to note that a parent should be able the trigger the rendering of his children (this enures the recursive nature of the template rendering). Look at the model template for an example:\n\nmodel = (\n    \"class {{ name }}Model(models.Model):\\n\"\n    \"    {%- for child in children %}\\n\"\n    \"    {{ child | render }}\\n\"\n    \"    {%- endfor %}\\n\"\n)\n\nfield = \"{{ name }} = models.{{ type | title }}Field()\"\n\ntodo: document to-file\ntodo: document group&gt;\nWe are missing one more thing, we need to be able to save the result to a file and we’d like to have that info in the xml and not mess with code to get the job done. So, here’s a new struct:\n\ndestination = tempfile.NamedTemporaryFile()\n\ns_file = xml_to_data(\n    f\"\"\"\n    &lt;model name=\"User\" to-file=\"{destination.name}\"&gt;\n        &lt;field name=\"id\" type=\"integer\"/&gt;\n        &lt;field name=\"username\" type=\"char\"/&gt;\n        &lt;field name=\"email\" type=\"email\"/&gt;\n    &lt;/model&gt;\n\"\"\"\n)\n\nwith files(\n    {\n        \"/tmp/templates/model.jinja2\": model,\n        \"/tmp/templates/field.jinja2\": field,\n    }\n):\n    sal = from_config(template_directories=[\"/tmp/templates\"])\n    print(sal.process(s_file.clone()))\n\n\nTo make this even more powerful, we can use frontmatter to embed meta data into the templates themself and merge those with the attributes of the node.\n\n\nTo make it even more powerful, the frontmatter can contain any attribute from the struct so it needs to be extracted in a raw formar, rendered and then extracted. But first, we need new templates..\n\n\nmodel = \"\"\"\n---\nreference:  \"sigla-{{ node.attrs.name | lower }}-model\"\n---\nclass {{ name }}Model(models.Model): # {{ reference }}\n    {% for child in children -%}\n    {{ child | render }}\n    {% endfor %}\n\"\"\"\n\nfield = \"\"\"\n---\nreference:  \"sigla-{{ node.name | lower }}-model\"\n---\n{{ name }} = models.{{ type | title }}Field() \n\"\"\"\n\n\nwith files(\n    {\n        \"/tmp/templates/model.jinja2\": model,\n        \"/tmp/templates/field.jinja2\": field,\n    }\n):\n    sal = from_config(template_directories=[\"/tmp/templates\"])\n    test_eq(\n        sal.process(struct.clone()).strip(),\n        dedent(\n            \"\"\"\n    class UserModel(models.Model): # sigla-user-model\n        id = models.IntegerField()\n        username = models.CharField()\n        email = models.EmailField()\n    \"\"\"\n        ).strip(),\n    )\n\n\nwith files(\n    {\n        \"/tmp/templates/model.jinja2\": model,\n        \"/tmp/templates/field.jinja2\": field,\n    }\n):\n    sal = from_config(template_directories=[\"/tmp/templates\"])\n    sal.process(s_file)\n\n    with open(destination.name, \"r\") as h:\n        test_eq(\n            h.read().strip(),\n            dedent(\n                \"\"\"\n    class UserModel(models.Model): # sigla-user-model\n        id = models.IntegerField()\n        username = models.CharField()\n        email = models.EmailField()\n        \"\"\"\n            ).strip(),\n        )\n\n\nxml = xml_to_data(\n    \"\"\"\n&lt;W to-file=\"/tmp/results.txt\"&gt;\n    &lt;a/&gt;\n    &lt;a/&gt;\n    &lt;b/&gt;\n&lt;/W&gt;\n\"\"\"\n)\n\n\nw = \"\"\"\n---\n---\n{%- for i in node|imports|sum(None, [])|unique %}\n{{ i }}\n{%- endfor %}\n\n\nclass W:\n    {%- for child in children %}\n    {{ child | render }}\n    {%- endfor %}\n    \n\"\"\"\n\n\na = \"\"\"\n---\nimports: \n    - from AAA import A\n---\na = AAA()\n\"\"\"\n\nb = \"\"\"\n---\nimports: \n    - from BBB import B\n---\nb = BBB()\n\"\"\"\n\nwith files(\n    {\n        \"/tmp/templates/W.jinja2\": w,\n        \"/tmp/templates/a.jinja2\": a,\n        \"/tmp/templates/b.jinja2\": b,\n        \"/tmp/results.txt\": \" \",\n    }\n):\n\n    def imports(data: Data):\n        imports_ = [d.attrs.get(\"imports\") for d, _ in data]\n        imports_ = [d for d in imports_ if d]\n        return imports_\n\n    sal = from_config(\n        template_directories=[\"/tmp/templates\"], filters={\"imports\": imports}\n    )\n    res = sal.process(xml)\n\n    assert (\n        res.strip()\n        == dedent(\n            \"\"\"\n    from AAA import A\n    from BBB import B\n\n\n    class W:\n        a = AAA()\n        a = AAA()\n        b = BBB()\n    \"\"\"\n        ).strip()\n    )",
+    "crumbs": [
+      "Code Generation"
+    ]
+  },
+  {
+    "objectID": "99_frontmatter.html",
+    "href": "99_frontmatter.html",
+    "title": "sal-code-generator",
+    "section": "",
+    "text": "Later on, we will use frontmatter to make our code generator more powerful. Let’s build some helpers\n\nmodel = \"\"\"\n---\nreference:  \"sigla-{{ node.attrs.name | lower }}-model\"\n---\nclass {{ name }}Model(models.Model): # {{ reference }}\n    {% for child in children -%}\n    {{ child | render }}\n    {% endfor %}\n\"\"\"\n\nfm = FrontMatter().get_frontmatter_source(model)\ntest_eq(fm, 'reference:  \"sigla-{{ node.attrs.name | lower }}-model\"')",
+    "crumbs": [
+      "Frontmatter"
+    ]
+  },
+  {
+    "objectID": "99_frontmatter.html#frontmatter",
+    "href": "99_frontmatter.html#frontmatter",
+    "title": "sal-code-generator",
+    "section": "",
+    "text": "Later on, we will use frontmatter to make our code generator more powerful. Let’s build some helpers\n\nmodel = \"\"\"\n---\nreference:  \"sigla-{{ node.attrs.name | lower }}-model\"\n---\nclass {{ name }}Model(models.Model): # {{ reference }}\n    {% for child in children -%}\n    {{ child | render }}\n    {% endfor %}\n\"\"\"\n\nfm = FrontMatter().get_frontmatter_source(model)\ntest_eq(fm, 'reference:  \"sigla-{{ node.attrs.name | lower }}-model\"')",
+    "crumbs": [
+      "Frontmatter"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sal",
+    "section": "",
+    "text": "Repository | PyPi | Documentation\nSal is a code generator created with familiar technologies (xml, jinja2, frontmatter, yml).",
+    "crumbs": [
+      "Sal"
+    ]
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "Sal",
+    "section": "Install",
+    "text": "Install\npip install sal-code-generator\nor\npoetry add sal-code-generator",
+    "crumbs": [
+      "Sal"
+    ]
+  }
+]
